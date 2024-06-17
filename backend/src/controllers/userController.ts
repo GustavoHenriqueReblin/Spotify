@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 
-import { userByLogin as userByLoginModel, userById as userByIdModel } from '../models/userModel';
+import { 
+    userByLogin as userByLoginModel, 
+    userById as userByIdModel, 
+    userByToken as userByTokenModel 
+} from '../models/userModel';
 import { userByLoginSchema } from '../schema';
 
 export interface UserByLoginRequest extends Request {
@@ -14,7 +18,40 @@ const userByLogin = async (req: UserByLoginRequest, res: Response) => {
         const result = await userByLoginModel(login, password);
         return res.status(200).json(result);
     } catch (error) {
-        
+        console.error(error);
+        if (error instanceof Error) {
+            res.status(500).json({
+                statusCode: 500,
+                message: error.message,
+            });
+        } else {
+            res.status(500).json({
+                statusCode: 500,
+                message: 'Unknown error',
+            });
+        }
+    }
+};
+
+const userByToken = async (req: Request, res: Response) => {
+    try {
+        const { token } = req.params;
+
+        const result = await userByTokenModel(token);
+        return res.status(200).json(result);
+    } catch (error) {
+        console.error(error);
+        if (error instanceof Error) {
+            res.status(500).json({
+                statusCode: 500,
+                message: error.message,
+            });
+        } else {
+            res.status(500).json({
+                statusCode: 500,
+                message: 'Unknown error',
+            });
+        }
     }
 };
 
@@ -40,4 +77,4 @@ const userById = async (req: Request, res: Response) => {
     }
 };
 
-export { userByLogin, userById };
+export { userByLogin, userByToken, userById };
