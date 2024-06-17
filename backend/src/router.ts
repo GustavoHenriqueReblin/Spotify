@@ -4,7 +4,7 @@ import { userByLogin, userByToken, userById } from "./controllers/userController
 import { authenticateToken } from "./middlewares/userMiddleware";
 const router = express.Router();
 
-router.get("/login", userByLogin);
+router.post("/login", userByLogin);
 router.get("/userByToken/:token", userByToken);
 router.get("/user/:id", userById);
 

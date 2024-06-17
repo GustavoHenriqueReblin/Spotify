@@ -1,10 +1,15 @@
 import React, { Fragment } from "react";
 import { Navigate } from 'react-router-dom';
+
 import { useAuthContext } from "../contexts/AuthContext";
+import Loading from "./Loading";
 
 const Main: React.FC = () => {
-    const user = useAuthContext();
-    if (!user?.user) return (<Navigate to={"/login"} />);
+    const { user, loading } = useAuthContext();
+
+    if (loading) return <Loading />;
+
+    if (!user) return <Navigate to={"/login"} />;
 
     return (
         <Fragment>

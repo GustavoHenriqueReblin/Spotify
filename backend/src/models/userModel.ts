@@ -15,9 +15,14 @@ const userByLogin = async (login: string, password: string): Promise<User[] | []
         const user = result[0];
         const token = jwt.sign({ id: user.id, login: user.login }, process.env.SECRET_KEY ?? "", { expiresIn: '1d' });
         await conn.execute("UPDATE user SET token = ? WHERE id = ? LIMIT 1", [token, user.id]);
+
+        return [{
+            ...user,
+            token
+        }];
     }
 
-    return result;
+    return [];
 };
 
 const userByToken = async (token: string): Promise<User[] | []> => {
