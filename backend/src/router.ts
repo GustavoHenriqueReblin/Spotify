@@ -4,7 +4,7 @@ import { userByLogin, userById } from "./controllers/userController";
 import { authenticateToken } from "./middlewares/userMiddleware";
 const router = express.Router();
 
-router.get("/user", userByLogin);
+router.get("/login", userByLogin);
 router.get("/user/:id", userById);
 
 // Exemplo de rota protegida
