@@ -1,8 +1,9 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { Navigate } from 'react-router-dom';
 
 import { useAuthContext } from "../contexts/AuthContext";
 import Loading from "./Loading";
+import NavBar from "../components/NavBar";
 
 const Main: React.FC = () => {
     const { user, loading } = useAuthContext();
@@ -12,9 +13,13 @@ const Main: React.FC = () => {
     if (!user) return <Navigate to={"/login"} />;
 
     return (
-        <Fragment>
-            <h2>Main Page</h2>
-        </Fragment>
+        <>
+            <main className="w-full h-screen">
+                <NavBar />
+                <section></section>
+            </main>
+            <footer className="w-full h-32 bg-zinc-700 absolute bottom-0"></footer>
+        </>
     );
 }
 

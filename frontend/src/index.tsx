@@ -7,6 +7,14 @@ const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 
+document.addEventListener("keydown", (e) => {
+    if ((e.key === "+" || e.key === "-") && e.ctrlKey) e.preventDefault();
+}, { passive: false });
+
+document.addEventListener("wheel", (e) => {
+    if (e.ctrlKey) e.preventDefault();
+}, { passive: false });
+
 root.render(
     <App />
 );
