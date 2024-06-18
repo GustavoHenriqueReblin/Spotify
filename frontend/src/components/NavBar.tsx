@@ -61,16 +61,31 @@ const NavBar: React.FC = () => {
 
     return (
         <aside className="w-80 h-full bg-black">
-            <nav className="w-full h-5/6 text-base font-semibold p-6">
-                <ul>
+            <nav className="w-full h-5/6 py-6 pl-6">
+                <ul className="text-base font-semibold">
                     { menuItems.map((item, i) => (
-                        <li className={`p-2 rounded-md ${item.active && "cursor-pointer"} text-zinc-300 hover:text-white`}>
+                        <li className={`py-2 rounded-md ${item.active && "cursor-pointer"} text-zinc-300 hover:text-white`}>
                             <NavBarItem 
                                 key={i} 
                                 to={item.to}
                                 title={item.title}
                                 iconWhenActive={item.iconWhenActive}
                                 iconWhenInactive={item.iconWhenInactive}
+                                showIcons={true}
+                            />
+                        </li>
+                    ))}
+                </ul>
+                <div className="h-[calc(1px)] w-full bg-zinc-600 mt-4"></div>
+                <ul className="text-base font-normal h-[calc(100dvh-386px)] overflow-y-auto">
+                    {Array.from({ length: 15 }).map((_, index) => (
+                        <li key={index} className="py-2 rounded-md cursor-pointer text-zinc-400 hover:text-white">
+                            <NavBarItem 
+                                to={"/playlist/" + index}
+                                title={"Nome da playlist"}
+                                iconWhenActive={<></>}
+                                iconWhenInactive={<></>}
+                                showIcons={false}
                             />
                         </li>
                     ))}

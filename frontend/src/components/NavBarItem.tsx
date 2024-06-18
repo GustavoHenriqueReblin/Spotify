@@ -4,11 +4,12 @@ import { NavLink } from "react-router-dom";
 interface NavBarItemProps {
     to: string;
     title: string;
-    iconWhenActive: ReactElement;
-    iconWhenInactive?: ReactElement;
+    iconWhenActive?: ReactElement | undefined;
+    iconWhenInactive?: ReactElement | undefined;
+    showIcons: boolean;
 };
 
-const NavBarItem = ({ to, title, iconWhenActive, iconWhenInactive}: NavBarItemProps) => {
+const NavBarItem = ({ to, title, iconWhenActive, iconWhenInactive, showIcons }: NavBarItemProps) => {
     return (
         <NavLink
             className="flex items-center gap-4"
@@ -17,9 +18,11 @@ const NavBarItem = ({ to, title, iconWhenActive, iconWhenInactive}: NavBarItemPr
         >
             {({ isActive }) => (
                 <>
-                    <div className="w-8 flex items-center justify-start">
-                        {isActive ? iconWhenActive : iconWhenInactive ?? iconWhenActive}
-                    </div>
+                    { showIcons && (
+                        <div className="w-8 flex items-center justify-start">
+                            {isActive ? iconWhenActive : iconWhenInactive ?? iconWhenActive}
+                        </div>
+                    )}
                     <span>{ title }</span>
                 </>
             )}
