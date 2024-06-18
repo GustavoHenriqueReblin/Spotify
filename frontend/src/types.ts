@@ -6,4 +6,5 @@ export type User = {
     name: string;
     accountLevel?: number;
     token?: string;
+    picture: string;
 };
