@@ -77,7 +77,7 @@ const NavBar: React.FC = () => {
                     ))}
                 </ul>
                 <div className="h-[calc(1px)] w-full bg-zinc-600 mt-4"></div>
-                <ul className="text-base font-normal h-[calc(100dvh-386px)] overflow-y-auto">
+                <ul className="text-base font-normal h-[calc(100dvh-369px)] overflow-y-auto">
                     {Array.from({ length: 15 }).map((_, index) => (
                         <li key={index} className="py-2 rounded-md cursor-pointer text-zinc-400 hover:text-white">
                             <NavBarItem 
