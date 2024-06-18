@@ -2,8 +2,9 @@ import React from "react";
 import { Navigate } from 'react-router-dom';
 
 import { useAuthContext } from "../contexts/AuthContext";
-import Loading from "./Loading";
+import Loading from "../components/Loading";
 import NavBar from "../components/NavBar";
+import Footer from "../components/Footer";
 
 const Main: React.FC = () => {
     const { user, loading } = useAuthContext();
@@ -18,7 +19,7 @@ const Main: React.FC = () => {
                 <NavBar user={user} />
                 <section></section>
             </main>
-            <footer className="w-full h-28 max-h-28 bg-zinc-700 absolute bottom-0"></footer>
+            <Footer user={user} />
         </>
     );
 }

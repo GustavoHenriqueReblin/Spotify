@@ -38,7 +38,7 @@ const NavBar = ({ user }: NavBarProps) => {
         },
         {
             to: "/library",
-            title: "Sua biblioteca",
+            title: "Sua Biblioteca",
             iconWhenActive: <BiMenu className="text-2xl" />,
             iconWhenInactive: <BiMenuAltLeft className="text-2xl" />,
             active: true,
@@ -53,13 +53,13 @@ const NavBar = ({ user }: NavBarProps) => {
         },
         {
             to: "new-playlist",
-            title: "Criar playlist",
+            title: "Criar Playlist",
             iconWhenActive: <MdAddToPhotos className="text-2xl" />,
             active: true,
         },
         {
             to: "/liked",
-            title: "Músicas curtidas",
+            title: "Músicas Curtidas",
             iconWhenActive: <AiFillLike className="text-2xl" />,
             iconWhenInactive: <AiOutlineLike className="text-2xl" />,
             active: true,
@@ -85,7 +85,7 @@ const NavBar = ({ user }: NavBarProps) => {
         };
         
         getPlaylists();
-    });
+    }, []);
 
     return (
         <aside className="w-80 h-full bg-black">
@@ -106,7 +106,7 @@ const NavBar = ({ user }: NavBarProps) => {
                 </ul>
                 <div className="h-[calc(1px)] w-full bg-zinc-600 mt-4"></div>
 
-                <ul className="text-base font-normal h-[calc(100dvh-369px)] overflow-y-auto">
+                <ul className="text-base font-normal h-[calc(100dvh-352px)] overflow-y-auto">
                     { loading ? (
                         <SkeletonLoad count={6} />
                     ) : (

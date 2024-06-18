@@ -8,7 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { User } from "../types";
-import Loading from "./Loading";
+import Loading from "../components/Loading";
 
 const Login: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(true);
