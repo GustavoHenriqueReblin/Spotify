@@ -1,5 +1,5 @@
 export type User = {
-    id: string;
+    id: number;
     idLastMusic?: number;
     login: string;
     password: string;
@@ -7,4 +7,13 @@ export type User = {
     accountLevel?: number;
     token?: string;
     picture: string;
+};
+
+export type Playlist = {
+    id: number;
+    idUser: number;
+    name: string;
+    picture: number;
+    type: string;
+    userName: string;
 };

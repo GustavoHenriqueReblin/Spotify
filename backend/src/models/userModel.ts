@@ -34,7 +34,7 @@ const userByToken = async (token: string): Promise<User[] | []> => {
     return result;
 };
 
-const userById = async (id: string): Promise<User[] | []> => {
+const userById = async (id: number): Promise<User[] | []> => {
     const [rows] = await conn.execute(
         "SELECT * FROM user WHERE id = ? LIMIT 1", [id]
     );

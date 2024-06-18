@@ -59,7 +59,7 @@ const userById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const result = await userByIdModel(id);
+        const result = await userByIdModel(Number(id));
         return res.status(200).json(result);
     } catch (error) {
         console.error(error);
