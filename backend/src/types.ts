@@ -15,5 +15,14 @@ export type Playlist = {
     name: string;
     picture: number;
     type: string;
-    userName: string;
+    userName?: string;
+};
+
+export type Music = {
+    id: number;
+    name: string;
+    duration: number;
+    idAlbum: number;
+    albumName: string;
+    addedAt: Date;
 };
