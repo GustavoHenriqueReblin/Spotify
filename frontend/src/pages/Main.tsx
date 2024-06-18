@@ -15,7 +15,7 @@ const Main: React.FC = () => {
     return (
         <>
             <main className="w-full h-screen">
-                <NavBar />
+                <NavBar user={user} />
                 <section></section>
             </main>
             <footer className="w-full h-28 max-h-28 bg-zinc-700 absolute bottom-0"></footer>

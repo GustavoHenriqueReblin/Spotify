@@ -1,9 +1,12 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { IoHome, IoHomeOutline  } from "react-icons/io5";
 import { BiMenu, BiMenuAltLeft, BiSearch, BiSearchAlt  } from "react-icons/bi";
 import { MdAddToPhotos } from "react-icons/md";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
+
 import NavBarItem from "./NavBarItem";
+import { User, Playlist } from "../types";
+import SkeletonLoad from "./SkeletonLoad";
 
 interface MenuItems {
     to: string;
@@ -13,7 +16,11 @@ interface MenuItems {
     active: boolean;
 };
 
-const NavBar: React.FC = () => {
+interface NavBarProps {
+    user: User;
+};
+
+const NavBar = ({ user }: NavBarProps) => {
     const menuItems: MenuItems[] = [
         {
             to: "/",
@@ -59,12 +66,33 @@ const NavBar: React.FC = () => {
         },
     ];
 
+    const [loading, setLoading] = useState<boolean>(true);
+    const [library, setLibrary] = useState<Playlist[] | undefined>(undefined);
+
+    useEffect(() => {
+        const getPlaylists = async () => {
+            const res = await fetch((process.env.REACT_APP_SERVER_URL ?? "") + "/library/" + user.id, {
+                method: "get",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${user.token}`
+                },
+            });            
+    
+            const library = await res.json();
+            setLibrary(library);
+            setLoading(false);
+        };
+        
+        getPlaylists();
+    });
+
     return (
         <aside className="w-80 h-full bg-black">
             <nav className="w-full h-5/6 py-6 pl-6">
                 <ul className="text-base font-semibold">
                     { menuItems.map((item, i) => (
-                        <li className={`py-2 rounded-md ${item.active && "cursor-pointer"} text-zinc-300 hover:text-white`}>
+                        <li key={i} className={`py-2 rounded-md ${item.active && "cursor-pointer"} text-zinc-300 hover:text-white`}>
                             <NavBarItem 
                                 key={i} 
                                 to={item.to}
@@ -77,18 +105,31 @@ const NavBar: React.FC = () => {
                     ))}
                 </ul>
                 <div className="h-[calc(1px)] w-full bg-zinc-600 mt-4"></div>
+
                 <ul className="text-base font-normal h-[calc(100dvh-369px)] overflow-y-auto">
-                    {Array.from({ length: 15 }).map((_, index) => (
-                        <li key={index} className="py-2 rounded-md cursor-pointer text-zinc-400 hover:text-white">
-                            <NavBarItem 
-                                to={"/playlist/" + index}
-                                title={"Nome da playlist"}
-                                iconWhenActive={<></>}
-                                iconWhenInactive={<></>}
-                                showIcons={false}
-                            />
-                        </li>
-                    ))}
+                    { loading ? (
+                        <SkeletonLoad count={6} />
+                    ) : (
+                        <>
+                            { library ? 
+                                library.map((playlist, i) => (
+                                    <li key={i} className={`py-2 rounded-md cursor-pointer text-zinc-300 hover:text-white`}>
+                                        <NavBarItem 
+                                            key={i} 
+                                            to={"/playlist/" + playlist.id}
+                                            title={playlist.name}
+                                            iconWhenActive={<></>}
+                                            iconWhenInactive={<></>}
+                                            showIcons={false}
+                                        />
+                                    </li>
+                                )) : (
+                                <div className="mt-4">
+                                    <span className="text-sm">Nenhuma playlist encontrada :(</span>
+                                </div>
+                            )}
+                        </>
+                    )}
                 </ul>
             </nav>
         </aside>
