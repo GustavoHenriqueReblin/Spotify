@@ -22,6 +22,7 @@ export type Music = {
     id: number;
     name: string;
     duration: number;
+    src: string;
     idAlbum: number;
     albumName: string;
     addedAt: Date;

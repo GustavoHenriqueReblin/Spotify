@@ -16,10 +16,12 @@
 
 
 -- Copiando estrutura do banco de dados para spotify
+DROP DATABASE IF EXISTS `spotify`;
 CREATE DATABASE IF NOT EXISTS `spotify` /*!40100 DEFAULT CHARACTER SET armscii8 COLLATE armscii8_bin */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `spotify`;
 
 -- Copiando estrutura para tabela spotify.album
+DROP TABLE IF EXISTS `album`;
 CREATE TABLE IF NOT EXISTS `album` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(150) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
@@ -27,11 +29,12 @@ CREATE TABLE IF NOT EXISTS `album` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
 
--- Copiando dados para a tabela spotify.album: ~1 rows (aproximadamente)
+-- Copiando dados para a tabela spotify.album: ~0 rows (aproximadamente)
 INSERT INTO `album` (`id`, `name`, `createdAt`) VALUES
 	(1, 'Don\'t You Worry Child', '2012-01-01');
 
 -- Copiando estrutura para tabela spotify.alb_art
+DROP TABLE IF EXISTS `alb_art`;
 CREATE TABLE IF NOT EXISTS `alb_art` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idAlbum` int unsigned DEFAULT NULL,
@@ -43,12 +46,13 @@ CREATE TABLE IF NOT EXISTS `alb_art` (
   CONSTRAINT `fk_alb_art_artist` FOREIGN KEY (`idArtist`) REFERENCES `artist` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
 
--- Copiando dados para a tabela spotify.alb_art: ~2 rows (aproximadamente)
+-- Copiando dados para a tabela spotify.alb_art: ~0 rows (aproximadamente)
 INSERT INTO `alb_art` (`id`, `idAlbum`, `idArtist`) VALUES
 	(1, 1, 1),
 	(2, 1, 2);
 
 -- Copiando estrutura para tabela spotify.alb_mus
+DROP TABLE IF EXISTS `alb_mus`;
 CREATE TABLE IF NOT EXISTS `alb_mus` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idAlbum` int unsigned DEFAULT NULL,
@@ -60,11 +64,12 @@ CREATE TABLE IF NOT EXISTS `alb_mus` (
   CONSTRAINT `fk_alb_mus_music` FOREIGN KEY (`idMusic`) REFERENCES `music` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
 
--- Copiando dados para a tabela spotify.alb_mus: ~1 rows (aproximadamente)
+-- Copiando dados para a tabela spotify.alb_mus: ~0 rows (aproximadamente)
 INSERT INTO `alb_mus` (`id`, `idAlbum`, `idMusic`) VALUES
 	(1, 1, 1);
 
 -- Copiando estrutura para tabela spotify.artist
+DROP TABLE IF EXISTS `artist`;
 CREATE TABLE IF NOT EXISTS `artist` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `firstName` varchar(50) COLLATE armscii8_bin DEFAULT NULL,
@@ -72,13 +77,14 @@ CREATE TABLE IF NOT EXISTS `artist` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
 
--- Copiando dados para a tabela spotify.artist: ~3 rows (aproximadamente)
+-- Copiando dados para a tabela spotify.artist: ~2 rows (aproximadamente)
 INSERT INTO `artist` (`id`, `firstName`, `lastName`) VALUES
 	(1, 'Swedish House Mafia', NULL),
 	(2, 'John Martin', NULL),
 	(3, 'Flo rida', NULL);
 
 -- Copiando estrutura para tabela spotify.art_mus
+DROP TABLE IF EXISTS `art_mus`;
 CREATE TABLE IF NOT EXISTS `art_mus` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idArtist` int unsigned DEFAULT NULL,
@@ -96,6 +102,7 @@ INSERT INTO `art_mus` (`id`, `idArtist`, `idMusic`) VALUES
 	(2, 2, 1);
 
 -- Copiando estrutura para tabela spotify.library
+DROP TABLE IF EXISTS `library`;
 CREATE TABLE IF NOT EXISTS `library` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idUser` int unsigned DEFAULT NULL,
@@ -104,11 +111,12 @@ CREATE TABLE IF NOT EXISTS `library` (
   CONSTRAINT `fk_library_user` FOREIGN KEY (`idUser`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
 
--- Copiando dados para a tabela spotify.library: ~1 rows (aproximadamente)
+-- Copiando dados para a tabela spotify.library: ~0 rows (aproximadamente)
 INSERT INTO `library` (`id`, `idUser`) VALUES
 	(1, 1);
 
 -- Copiando estrutura para tabela spotify.lib_pla
+DROP TABLE IF EXISTS `lib_pla`;
 CREATE TABLE IF NOT EXISTS `lib_pla` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idLibrary` int unsigned DEFAULT NULL,
@@ -120,26 +128,30 @@ CREATE TABLE IF NOT EXISTS `lib_pla` (
   CONSTRAINT `fk_lib_pla_playlist` FOREIGN KEY (`idPlaylist`) REFERENCES `playlist` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
 
--- Copiando dados para a tabela spotify.lib_pla: ~3 rows (aproximadamente)
+-- Copiando dados para a tabela spotify.lib_pla: ~1 rows (aproximadamente)
 INSERT INTO `lib_pla` (`id`, `idLibrary`, `idPlaylist`) VALUES
 	(1, 1, 2),
 	(2, 1, 1),
 	(3, 1, 3);
 
 -- Copiando estrutura para tabela spotify.music
+DROP TABLE IF EXISTS `music`;
 CREATE TABLE IF NOT EXISTS `music` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) COLLATE armscii8_bin DEFAULT NULL,
   `duration` int DEFAULT NULL COMMENT 'in seconds',
+  `src` varchar(500) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
 
--- Copiando dados para a tabela spotify.music: ~2 rows (aproximadamente)
-INSERT INTO `music` (`id`, `name`, `duration`) VALUES
-	(1, 'Don\'t You Worry Child', 212),
-	(2, 'Good Feeling', 248);
+-- Copiando dados para a tabela spotify.music: ~3 rows (aproximadamente)
+INSERT INTO `music` (`id`, `name`, `duration`, `src`) VALUES
+	(1, 'Don`t You Worry Child', 212, 'https://firebasestorage.googleapis.com/v0/b/spotify-2e788.appspot.com/o/Don\'t%20You%20Worry%20Child%20%7Bid-1%7D.mp3?alt=media&token=9d3640ef-d585-4ea8-9520-56b84dafd499'),
+	(2, 'Good Feeling', 248, NULL),
+	(3, 'I Gota Feeling', 289, NULL);
 
 -- Copiando estrutura para tabela spotify.mus_pla
+DROP TABLE IF EXISTS `mus_pla`;
 CREATE TABLE IF NOT EXISTS `mus_pla` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idMusic` int unsigned DEFAULT NULL,
@@ -150,18 +162,20 @@ CREATE TABLE IF NOT EXISTS `mus_pla` (
   KEY `fk_mus_pla_playlist` (`idPlaylist`),
   CONSTRAINT `fk_mus_pla_music` FOREIGN KEY (`idMusic`) REFERENCES `music` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `fk_mus_pla_playlist` FOREIGN KEY (`idPlaylist`) REFERENCES `playlist` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
 
--- Copiando dados para a tabela spotify.mus_pla: ~2 rows (aproximadamente)
+-- Copiando dados para a tabela spotify.mus_pla: ~0 rows (aproximadamente)
 INSERT INTO `mus_pla` (`id`, `idMusic`, `idPlaylist`, `addedAt`) VALUES
 	(1, 1, 2, '2024-06-18 14:30:38'),
-	(2, 2, 2, '2024-06-18 14:30:38');
+	(2, 3, 2, '2024-06-18 14:30:38'),
+	(3, 2, 2, '2024-06-18 14:30:38');
 
 -- Copiando estrutura para tabela spotify.playlist
+DROP TABLE IF EXISTS `playlist`;
 CREATE TABLE IF NOT EXISTS `playlist` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idUser` int unsigned DEFAULT NULL,
-  `nome` varchar(50) COLLATE armscii8_bin DEFAULT NULL,
+  `name` varchar(50) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
   `picture` varchar(50) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
   `type` tinyint DEFAULT NULL COMMENT '0 - private, 1 - public',
   PRIMARY KEY (`id`),
@@ -170,12 +184,13 @@ CREATE TABLE IF NOT EXISTS `playlist` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
 
 -- Copiando dados para a tabela spotify.playlist: ~3 rows (aproximadamente)
-INSERT INTO `playlist` (`id`, `idUser`, `nome`, `picture`, `type`) VALUES
+INSERT INTO `playlist` (`id`, `idUser`, `name`, `picture`, `type`) VALUES
 	(1, 1, 'Pagodeira', NULL, 1),
 	(2, 2, 'SO PEDRADA NOSTALGICA', NULL, 1),
 	(3, 1, 'Modao sertanejo', NULL, 1);
 
 -- Copiando estrutura para tabela spotify.user
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idLastMusic` int unsigned DEFAULT NULL,
@@ -190,9 +205,9 @@ CREATE TABLE IF NOT EXISTS `user` (
   CONSTRAINT `fk_user_music` FOREIGN KEY (`idLastMusic`) REFERENCES `music` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
 
--- Copiando dados para a tabela spotify.user: ~2 rows (aproximadamente)
+-- Copiando dados para a tabela spotify.user: ~1 rows (aproximadamente)
 INSERT INTO `user` (`id`, `idLastMusic`, `accountLevel`, `login`, `name`, `password`, `token`, `picture`) VALUES
-	(1, NULL, 0, 'gustavohique12@gmail.com', 'GHR', '86f7e437faa5a7fce15d1ddcb9eaeaea377667b8', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJndXN0YXZvaGlxdWUxMkBnbWFpbC5jb20iLCJpYXQiOjE3MTg3Mjg2MDMsImV4cCI6MTcxODgxNTAwM30.mfIDA5126P_UeLz1Rhnd2ejJTR1N-Wa8UjcGWVgCQmQ', 'https://yt3.ggpht.com/yti/ANjgQV9U_Am-ZeOXM_HSWtiNzG1Bh9YMGN9dR88D1qKy4OsZIPg=s108-c-k-c0x00ffffff-no-rj'),
+	(1, NULL, 0, 'gustavohique12@gmail.com', 'GHR', '86f7e437faa5a7fce15d1ddcb9eaeaea377667b8', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibG9naW4iOiJndXN0YXZvaGlxdWUxMkBnbWFpbC5jb20iLCJpYXQiOjE3MTg3NTgyNjEsImV4cCI6MTcxODg0NDY2MX0.hVZ4Aey4Zy4IMMFg4uOg3Wj6-Uq7APp56ne9fnp_1GE', 'https://yt3.ggpht.com/yti/ANjgQV9U_Am-ZeOXM_HSWtiNzG1Bh9YMGN9dR88D1qKy4OsZIPg=s108-c-k-c0x00ffffff-no-rj'),
 	(2, NULL, 2, 'perico@gmail.com', 'PERIC0', NULL, NULL, NULL);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;

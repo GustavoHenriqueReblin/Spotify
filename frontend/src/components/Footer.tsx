@@ -2,6 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { GoHeart } from "react-icons/go";
 import { GoHeartFill } from "react-icons/go";
+import { FaCirclePlay, FaCirclePause } from "react-icons/fa6";
+import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
+import { TbArrowsRandom } from "react-icons/tb";
+import { IoRepeat } from "react-icons/io5";
+
 import { User } from "../types";
 
 interface FooterProps {
@@ -13,10 +18,15 @@ const Footer = ({ user }: FooterProps) => {
     const [timeInString, setTimeInString] = useState<string>("0:00");
     const [isRunning, setIsRunning] = useState<boolean>(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const [repeat, setRepeat] = useState<boolean>(false);
+    const [like, setLike] = useState<boolean>(false);
     const timeMax = 156; // Depois pegar o tempo da música na base
 
     const [volume, setVolume] = useState<number>(0.5);
     const [muted, setMuted] = useState<boolean>(false);
+
+    const audioUrl = "https://firebasestorage.googleapis.com/v0/b/spotify-2e788.appspot.com/o/Don't%20You%20Worry%20Child%20%7Bid-1%7D.mp3?alt=media&token=9d3640ef-d585-4ea8-9520-56b84dafd499";
+    const audio = new Audio(audioUrl);
 
     const formatTime = (time: number): string => {
         if (time < 60) {
@@ -32,10 +42,17 @@ const Footer = ({ user }: FooterProps) => {
         if (isRunning) {
             intervalRef.current = setInterval(() => {
                 setTime(prevTime => {
-                    if (prevTime + 1 >= timeMax) {
+                    if (prevTime + 1 > timeMax) {
                         clearInterval(intervalRef.current!);
                         intervalRef.current = null;
                         setIsRunning(false);
+
+                        if (repeat) {
+                            setTime(0);
+                            setTimeout(() => {
+                                setIsRunning(true);
+                            }, 250);
+                        }
                     }
                     return prevTime + 1;
                 });
@@ -58,6 +75,7 @@ const Footer = ({ user }: FooterProps) => {
 
     const handlePlayPause = () => {
         setIsRunning(!isRunning);
+        isRunning ? audio.pause() : audio.play();
     };
 
     return (
@@ -67,21 +85,47 @@ const Footer = ({ user }: FooterProps) => {
                     <img></img>
                 </div>
                 <div className="mx-5 flex flex-col">
-                    <h3 className="w-fit max-w-42 text-sm font-semibold cursor-pointer hover:underline whitespace-nowrap overflow-hidden text-ellipsis">Nome da música</h3>
-                    <span className="w-fit max-w-42 text-xs font-light cursor-pointer hover:underline whitespace-nowrap overflow-hidden text-ellipsis">Artistas</span>
+                    <h3 
+                        className="w-fit max-w-42 text-sm font-semibold cursor-pointer hover:underline whitespace-nowrap overflow-hidden text-ellipsis">
+                            Nome da música
+                    </h3>
+                    <span 
+                        className="w-fit max-w-42 text-xs font-light cursor-pointer hover:underline whitespace-nowrap overflow-hidden text-ellipsis">
+                            Artistas
+                    </span>
                 </div>
-                <GoHeart className="text-lg mx-2 cursor-pointer hover:text-white" />
+                { like ? (
+                    <GoHeartFill
+                        title="Descurtir" 
+                        className="text-lg mx-2 cursor-pointer hover:text-white"
+                        onClick={() => setLike(!like)} 
+                    />
+                ) : (
+                    <GoHeart 
+                        title="Curtir" 
+                        className="text-lg mx-2 cursor-pointer hover:text-white"
+                        onClick={() => setLike(!like)} 
+                    />
+                )}
             </section>
             <section className="w-2/5 flex flex-col items-center justify-center p-4">
-                <div className="w-full h-2/3 flex flex-col items-center">
-                    <button onClick={handlePlayPause}>
-                        {isRunning ? 'Pause' : 'Play'}
-                    </button>
+                <div className="w-full h-2/3 flex items-center justify-center gap-4 pb-2">
+                    <TbArrowsRandom title="Ordem aleatória" className="text-2xl cursor-pointer hover:scale-105" />
+                    <MdNavigateBefore title="Anterior" className="text-4xl cursor-pointer hover:scale-105" />
+                    <div title={`${isRunning ? "Pausar" : "Tocar"}`} className="cursor-pointer hover:scale-105" onClick={handlePlayPause}>
+                        { isRunning ? <FaCirclePause className="text-4xl" /> : <FaCirclePlay className="text-4xl" /> }
+                    </div> 
+                    <MdNavigateNext title="Próxima" className="text-4xl cursor-pointer hover:scale-105" />
+                    <IoRepeat 
+                        title="Repetir" 
+                        className={`text-2xl cursor-pointer hover:scale-105 ${repeat && "text-green-500"}`} 
+                        onClick={() => setRepeat(!repeat)} 
+                    />
                 </div>
                 <div className="w-full h-1/3 flex gap-4 items-center">
                     <span className="text-xs font-extralight">{ timeInString }</span>
                     <input
-                        className="w-full h-1 cursor-pointer"
+                        className="w-full h-1 cursor-pointer rounded-lg"
                         type="range"
                         min={0}
                         max={timeMax}
