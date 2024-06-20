@@ -6,6 +6,8 @@ import { FaCirclePlay, FaCirclePause } from "react-icons/fa6";
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
 import { TbArrowsRandom } from "react-icons/tb";
 import { IoRepeat } from "react-icons/io5";
+import { AiOutlineFullscreen, AiOutlineFullscreenExit } from "react-icons/ai";
+import { LuVolumeX, LuVolume2, LuVolume1, LuVolume } from "react-icons/lu";
 
 import { User } from "../types";
 
@@ -13,20 +15,31 @@ interface FooterProps {
     user: User;
 };
 
+const audioUrl = "https://firebasestorage.googleapis.com/v0/b/spotify-2e788.appspot.com/o/Don't%20You%20Worry%20Child%20%7Bid-1%7D.mp3?alt=media&token=9d3640ef-d585-4ea8-9520-56b84dafd499";
+const audio = new Audio(audioUrl);
+
+const playpauseWithKeyboard = (e: any) => {
+    if (e.code === "Space") {
+        const button = document.getElementById("play-pause-button") as HTMLButtonElement;
+        button && button.click();
+    }
+};
+
+document.addEventListener("keydown", playpauseWithKeyboard, { passive: false });
+
 const Footer = ({ user }: FooterProps) => {
     const [time, setTime] = useState<number>(0);
     const [timeInString, setTimeInString] = useState<string>("0:00");
     const [isRunning, setIsRunning] = useState<boolean>(false);
+    const [manualChange, setManualChange] = useState<boolean>(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const [repeat, setRepeat] = useState<boolean>(false);
     const [like, setLike] = useState<boolean>(false);
-    const timeMax = 156; // Depois pegar o tempo da música na base
+    const timeMax = 212; // Depois pegar o tempo da música na base - esse tempo agora é da const audioUrl
 
-    const [volume, setVolume] = useState<number>(0.5);
+    const [volume, setVolume] = useState<number>(0.2);
     const [muted, setMuted] = useState<boolean>(false);
-
-    const audioUrl = "https://firebasestorage.googleapis.com/v0/b/spotify-2e788.appspot.com/o/Don't%20You%20Worry%20Child%20%7Bid-1%7D.mp3?alt=media&token=9d3640ef-d585-4ea8-9520-56b84dafd499";
-    const audio = new Audio(audioUrl);
+    const [fullScreen, setFullScreen] = useState<boolean>(false);
 
     const formatTime = (time: number): string => {
         if (time < 60) {
@@ -51,6 +64,7 @@ const Footer = ({ user }: FooterProps) => {
                             setTime(0);
                             setTimeout(() => {
                                 setIsRunning(true);
+                                audio.play();
                             }, 250);
                         }
                     }
@@ -71,11 +85,20 @@ const Footer = ({ user }: FooterProps) => {
 
     useEffect(() => {
         setTimeInString(formatTime(time));
+        if (manualChange) {
+            audio.currentTime = time;
+            setManualChange(false);
+        }
     }, [time]);
 
+    useEffect(() => {
+        audio.volume = volume;
+        setMuted(volume <= 0);
+    }, [volume]);
+
     const handlePlayPause = () => {
-        setIsRunning(!isRunning);
         isRunning ? audio.pause() : audio.play();
+        setIsRunning(!isRunning);
     };
 
     return (
@@ -112,7 +135,7 @@ const Footer = ({ user }: FooterProps) => {
                 <div className="w-full h-2/3 flex items-center justify-center gap-4 pb-2">
                     <TbArrowsRandom title="Ordem aleatória" className="text-2xl cursor-pointer hover:scale-105" />
                     <MdNavigateBefore title="Anterior" className="text-4xl cursor-pointer hover:scale-105" />
-                    <div title={`${isRunning ? "Pausar" : "Tocar"}`} className="cursor-pointer hover:scale-105" onClick={handlePlayPause}>
+                    <div title={`${isRunning ? "Pausar" : "Tocar"}`} id="play-pause-button" className="cursor-pointer hover:scale-105" onClick={handlePlayPause}>
                         { isRunning ? <FaCirclePause className="text-4xl" /> : <FaCirclePlay className="text-4xl" /> }
                     </div> 
                     <MdNavigateNext title="Próxima" className="text-4xl cursor-pointer hover:scale-105" />
@@ -132,13 +155,42 @@ const Footer = ({ user }: FooterProps) => {
                         step={1}
                         value={time}
                         onChange={event => {
-                            setTime(event.target.valueAsNumber)
+                            setTime(event.target.valueAsNumber);
+                            setManualChange(true);
                         }}
                     />
                     <span className="text-xs font-extralight">{ formatTime(timeMax) }</span>
                 </div>
             </section>
             <section className="w-[calc(30%)] flex items-center justify-end p-4">
+                <div onClick={() => {
+                    muted ? setVolume(0.2) : setVolume(0);
+                    setMuted(!muted);
+                }}>
+                    {   muted ? <LuVolumeX className="text-2xl cursor-pointer hover:scale-105 mx-2" /> :
+                        volume < 0.3 ? <LuVolume className="text-2xl cursor-pointer hover:scale-105 mx-2" /> :
+                        volume < 0.8 ? <LuVolume1 className="text-2xl cursor-pointer hover:scale-105 mx-2" /> :
+                        volume <= 1 ? <LuVolume2 className="text-2xl cursor-pointer hover:scale-105 mx-2" /> : 
+                        null
+                    }
+                </div>
+                <input
+                    className="w-32 h-1 cursor-pointer rounded-lg mx-2"
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.1}
+                    value={volume}
+                    onChange={event => {
+                        setVolume(event.target.valueAsNumber);
+                    }}
+                />
+                <div>
+                    { fullScreen 
+                        ? <AiOutlineFullscreenExit title="Sair Tela Cheia" className="text-2xl cursor-pointer hover:scale-105 mx-2" />
+                        : <AiOutlineFullscreen title="Tela Inteira" className="text-2xl cursor-pointer hover:scale-105 mx-2" /> 
+                    } 
+                </div>
             </section>
         </footer>
     );
