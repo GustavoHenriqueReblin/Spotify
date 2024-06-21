@@ -95,6 +95,7 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
                     { menuItems.map((item, i) => (
                         <li key={i} className={`rounded-md ${item.active && "cursor-pointer"} text-zinc-300 hover:text-white`}>
                             <NavBarItem 
+                                id={undefined}
                                 key={i} 
                                 to={item.to}
                                 title={item.title}
@@ -116,6 +117,7 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
                                 library.map((playlist, i) => (
                                     <li key={i} className={`rounded-md cursor-pointer text-zinc-300 hover:text-white`}>
                                         <NavBarItem 
+                                            id={playlist.id}
                                             key={i} 
                                             to={"/playlist"}
                                             title={playlist.name}

@@ -1,7 +1,9 @@
 import React, { ReactElement } from "react";
 import { NavLink } from "react-router-dom";
+import { usePlaylistContext } from "../contexts/PlaylistContext";
 
 interface NavBarItemProps {
+    id: number | undefined;
     to: string;
     title: string;
     iconWhenActive?: ReactElement | undefined;
@@ -9,12 +11,15 @@ interface NavBarItemProps {
     showIcons: boolean;
 };
 
-const NavBarItem = ({ to, title, iconWhenActive, iconWhenInactive, showIcons }: NavBarItemProps) => {
+const NavBarItem = ({ id, to, title, iconWhenActive, iconWhenInactive, showIcons }: NavBarItemProps) => {
+    const { findPlaylist, playlist } = usePlaylistContext();
+
     return (
         <NavLink
             className="flex items-center gap-4 py-2"
             to={to}
             end
+            onClick={() => id && id !== playlist?.id && findPlaylist(id)}
         >
             {({ isActive }) => (
                 <>

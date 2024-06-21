@@ -3,6 +3,7 @@ import { AuthProvider } from "../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import PrivateLayout from "./PrivateLayout";
+import { PlaylistProvider } from "../contexts/PlaylistContext";
 
 interface PrivateRouteProps {
 	children: React.ReactNode;
@@ -15,9 +16,11 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, redirectTo, cooki
   
 	return isAuthenticated ? (
 		<AuthProvider>
-			<PrivateLayout>
-				{ children }
-			</PrivateLayout>
+			<PlaylistProvider>
+				<PrivateLayout>
+					{ children }
+				</PrivateLayout>
+			</PlaylistProvider>
 		</AuthProvider>
 	) : (
 	  	<Navigate to={redirectTo} />

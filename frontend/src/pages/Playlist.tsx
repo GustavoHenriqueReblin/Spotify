@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { usePlaylistContext } from "../contexts/PlaylistContext";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Playlist: React.FC = () => {
+    const { playlist, loading} = usePlaylistContext();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!loading && !playlist) navigate("/");
+    }, [loading]);
+
     return (
         <section className="w-[calc(100%-20rem)] h-full overflow-y-auto">
             <div className="h-fit w-full p-6 bg-zinc-700">
@@ -21,7 +30,7 @@ const Playlist: React.FC = () => {
                     </div>
                 </div>
                 <h2 className="text-sm my-1">Playlist</h2>
-                <h2 className="text-7xl font-bold my-4">Nome da Playlist</h2>
+                <h2 className="text-7xl font-bold my-4">{ playlist?.name }</h2>
                 <div className="flex gap-3 items-center">
                     <div className="h-8 w-8 bg-zinc-900 rounded-full"></div>
                     <span className="hover:underline font-semibold cursor-pointer">Nome de quem criou</span>
