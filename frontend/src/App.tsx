@@ -5,6 +5,7 @@ import Cookies from "js-cookie";
 
 import Login from "./pages/Login";
 import Main from "./pages/Main";
+import Playlist from "./pages/Playlist";
 
 interface PrivateRouteProps {
 	children: React.ReactNode;
@@ -27,6 +28,15 @@ const App: React.FC = () => {
 						<PrivateRoute redirectTo="/login" cookieName={ process.env.REACT_APP_AUTH_COOKIE_NAME }> 
 							<AuthProvider>
 								<Main />
+							</AuthProvider>
+						</PrivateRoute>
+						} 
+					/>
+					<Route 
+						path="/playlist" element={
+						<PrivateRoute redirectTo="/login" cookieName={ process.env.REACT_APP_AUTH_COOKIE_NAME }> 
+							<AuthProvider>
+								<Playlist />
 							</AuthProvider>
 						</PrivateRoute>
 						} 

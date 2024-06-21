@@ -18,15 +18,6 @@ interface FooterProps {
 const audioUrl = "https://firebasestorage.googleapis.com/v0/b/spotify-2e788.appspot.com/o/Don't%20You%20Worry%20Child%20%7Bid-1%7D.mp3?alt=media&token=9d3640ef-d585-4ea8-9520-56b84dafd499";
 const audio = new Audio(audioUrl);
 
-const playpauseWithKeyboard = (e: any) => {
-    if (e.code === "Space") {
-        const button = document.getElementById("play-pause-button") as HTMLButtonElement;
-        button && button.click();
-    }
-};
-
-document.addEventListener("keydown", playpauseWithKeyboard, { passive: false });
-
 const Footer = ({ user }: FooterProps) => {
     const [time, setTime] = useState<number>(0);
     const [timeInString, setTimeInString] = useState<string>("0:00");
@@ -102,7 +93,7 @@ const Footer = ({ user }: FooterProps) => {
     };
 
     return (
-        <footer className="w-full h-24 max-h-28 bg-zinc-800 absolute bottom-0 flex text-zinc-300">
+        <footer className="w-full h-24 max-h-28 bg-zinc-900 absolute bottom-0 flex text-zinc-300">
             <section className="w-[calc(30%)] flex items-center justify-start p-4">
                 <div className="w-16 h-16 bg-zinc-500">
                     <img></img>
@@ -162,20 +153,20 @@ const Footer = ({ user }: FooterProps) => {
                     <span className="text-xs font-extralight">{ formatTime(timeMax) }</span>
                 </div>
             </section>
-            <section className="w-[calc(30%)] flex items-center justify-end p-4">
+            <section className="w-[calc(30%)] flex items-center justify-end p-4 gap-4">
                 <div onClick={() => {
                     muted ? setVolume(0.2) : setVolume(0);
                     setMuted(!muted);
                 }}>
-                    {   muted ? <LuVolumeX className="text-2xl cursor-pointer hover:scale-105 mx-2" /> :
-                        volume < 0.3 ? <LuVolume className="text-2xl cursor-pointer hover:scale-105 mx-2" /> :
-                        volume < 0.8 ? <LuVolume1 className="text-2xl cursor-pointer hover:scale-105 mx-2" /> :
-                        volume <= 1 ? <LuVolume2 className="text-2xl cursor-pointer hover:scale-105 mx-2" /> : 
+                    {   muted ? <LuVolumeX className="text-2xl cursor-pointer hover:scale-105" /> :
+                        volume < 0.3 ? <LuVolume className="text-2xl cursor-pointer hover:scale-105" /> :
+                        volume < 0.8 ? <LuVolume1 className="text-2xl cursor-pointer hover:scale-105" /> :
+                        volume <= 1 ? <LuVolume2 className="text-2xl cursor-pointer hover:scale-105" /> : 
                         null
                     }
                 </div>
                 <input
-                    className="w-32 h-1 cursor-pointer rounded-lg mx-2"
+                    className="w-32 h-1 cursor-pointer rounded-lg"
                     type="range"
                     min={0}
                     max={1}
@@ -187,8 +178,8 @@ const Footer = ({ user }: FooterProps) => {
                 />
                 <div>
                     { fullScreen 
-                        ? <AiOutlineFullscreenExit title="Sair Tela Cheia" className="text-2xl cursor-pointer hover:scale-105 mx-2" />
-                        : <AiOutlineFullscreen title="Tela Inteira" className="text-2xl cursor-pointer hover:scale-105 mx-2" /> 
+                        ? <AiOutlineFullscreenExit title="Sair Tela Cheia" className="text-2xl cursor-pointer hover:scale-105" />
+                        : <AiOutlineFullscreen title="Tela Inteira" className="text-2xl cursor-pointer hover:scale-105" /> 
                     } 
                 </div>
             </section>

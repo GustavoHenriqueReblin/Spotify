@@ -15,6 +15,13 @@ document.addEventListener("wheel", (e) => {
     if (e.ctrlKey) e.preventDefault();
 }, { passive: false });
 
+document.addEventListener("keydown", (e: any) => {
+    if (e.code === "Space") {
+        const button = document.getElementById("play-pause-button") as HTMLButtonElement;
+        button && button.click();
+    }
+}, { passive: false });
+
 root.render(
     <App />
 );
