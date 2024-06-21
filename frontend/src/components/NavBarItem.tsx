@@ -12,7 +12,7 @@ interface NavBarItemProps {
 const NavBarItem = ({ to, title, iconWhenActive, iconWhenInactive, showIcons }: NavBarItemProps) => {
     return (
         <NavLink
-            className="flex items-center gap-4"
+            className="flex items-center gap-4 py-2"
             to={to}
             end
         >

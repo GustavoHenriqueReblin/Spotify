@@ -18,9 +18,10 @@ interface MenuItems {
 
 interface NavBarProps {
     user: User;
+    userLoading: boolean;
 };
 
-const NavBar = ({ user }: NavBarProps) => {
+const NavBar = ({ user, userLoading }: NavBarProps) => {
     const menuItems: MenuItems[] = [
         {
             to: "/",
@@ -65,7 +66,7 @@ const NavBar = ({ user }: NavBarProps) => {
             active: true,
         },
     ];
-
+    
     const [loading, setLoading] = useState<boolean>(true);
     const [library, setLibrary] = useState<Playlist[] | undefined>(undefined);
 
@@ -84,15 +85,15 @@ const NavBar = ({ user }: NavBarProps) => {
             setLoading(false);
         };
         
-        getPlaylists();
-    }, []);
+        !userLoading && user && loading && getPlaylists();
+    }, [userLoading, user, loading]);
 
     return (
         <aside className="w-80 h-full bg-black">
             <nav className="w-full h-5/6 py-6 pl-6">
                 <ul className="text-base font-semibold">
                     { menuItems.map((item, i) => (
-                        <li key={i} className={`py-2 rounded-md ${item.active && "cursor-pointer"} text-zinc-300 hover:text-white`}>
+                        <li key={i} className={`rounded-md ${item.active && "cursor-pointer"} text-zinc-300 hover:text-white`}>
                             <NavBarItem 
                                 key={i} 
                                 to={item.to}
@@ -113,10 +114,10 @@ const NavBar = ({ user }: NavBarProps) => {
                         <>
                             { library ? 
                                 library.map((playlist, i) => (
-                                    <li key={i} className={`py-2 rounded-md cursor-pointer text-zinc-300 hover:text-white`}>
+                                    <li key={i} className={`rounded-md cursor-pointer text-zinc-300 hover:text-white`}>
                                         <NavBarItem 
                                             key={i} 
-                                            to={"/playlist/" + playlist.id}
+                                            to={"/playlist"}
                                             title={playlist.name}
                                             iconWhenActive={<></>}
                                             iconWhenInactive={<></>}
