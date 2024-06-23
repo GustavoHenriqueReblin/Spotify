@@ -3,7 +3,7 @@ import { Music, Playlist } from "../types";
 
 const playlist = async (id: number): Promise<Playlist[] | []> => {
     const [rows] = await conn.execute(
-        "SELECT * FROM playlist WHERE id = ?", [id]
+        "SELECT p.*, u.`name` userName FROM playlist p INNER JOIN `user` u on u.id = p.idUser WHERE p.id = ?", [id]
     );
 
     const result = rows as Playlist[];

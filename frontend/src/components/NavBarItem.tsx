@@ -1,6 +1,7 @@
 import React, { ReactElement } from "react";
 import { NavLink } from "react-router-dom";
-import { usePlaylistContext } from "../contexts/PlaylistContext";
+import { useDispatch } from "react-redux";
+import { setPlaylistId } from "../store/slice";
 
 interface NavBarItemProps {
     id: number | undefined;
@@ -12,14 +13,14 @@ interface NavBarItemProps {
 };
 
 const NavBarItem = ({ id, to, title, iconWhenActive, iconWhenInactive, showIcons }: NavBarItemProps) => {
-    const { findPlaylist, playlist } = usePlaylistContext();
+    const dispatch = useDispatch();
 
     return (
         <NavLink
             className="flex items-center gap-4 py-2"
             to={to}
             end
-            onClick={() => id && id !== playlist?.id && findPlaylist(id)}
+            onClick={() => dispatch(setPlaylistId(id))}
         >
             {({ isActive }) => (
                 <>

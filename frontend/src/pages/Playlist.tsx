@@ -1,16 +1,45 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { usePlaylistContext } from "../contexts/PlaylistContext";
 import { Navigate, useNavigate } from "react-router-dom";
+import { Playlist as PlaylistType } from "../types";
+import { useSelector } from "react-redux";
+import Cookies from "js-cookie";
 
 const Playlist: React.FC = () => {
-    const { playlist, loading} = usePlaylistContext();
+    const [playlist, setPlaylist] = useState<PlaylistType | undefined>(undefined);
+    const [loading, setLoading] = useState<boolean>(true);
     const navigate = useNavigate();
+    const playlistId = useSelector((state: any) => state.playlistId.value);
 
     useEffect(() => {
-        if (!loading && !playlist) navigate("/");
-    }, [loading]);
+        if (!playlistId) navigate("/");
+        
+        if (playlistId !== undefined) {
+            const getPlaylistData = async () => {
+                try {
+                    const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
+                    const res = await fetch((process.env.REACT_APP_SERVER_URL ?? "") + "/playlist/" + playlistId, {
+                        method: "GET",
+                        headers: { 
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                    });
+
+                    const playlistData = await res.json();
+                    setPlaylist(playlistData[0]);
+                } catch (error) {
+                    console.error('Playlist find error:', error);
+                    throw new Error('Playlist find failed');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            getPlaylistData();
+        }
+    }, [playlistId, loading, navigate, playlist]);
 
     return (
         <section className="w-[calc(100%-20rem)] h-full overflow-y-auto">
@@ -30,10 +59,10 @@ const Playlist: React.FC = () => {
                     </div>
                 </div>
                 <h2 className="text-sm my-1">Playlist</h2>
-                <h2 className="text-7xl font-bold my-4">{ playlist?.name }</h2>
+                <h2 className="text-7xl font-bold my-4">{ loading ? "" : playlist?.name }</h2>
                 <div className="flex gap-3 items-center">
                     <div className="h-8 w-8 bg-zinc-900 rounded-full"></div>
-                    <span className="hover:underline font-semibold cursor-pointer">Nome de quem criou</span>
+                    <span className="hover:underline font-semibold cursor-pointer">{loading ? "---" : playlist?.userName}</span>
                     <span className="">*</span>
                     <span className="">2 likes</span>
                     <span className="">*</span>
