@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Playlist as PlaylistType } from "../types";
 import { useSelector } from "react-redux";
 import Cookies from "js-cookie";

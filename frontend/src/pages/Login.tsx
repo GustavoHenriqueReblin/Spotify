@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -9,10 +9,13 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { User } from "../types";
 import Loading from "../components/Loading";
+import Button from "../components/Button";
 
 const Login: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(true);
+	const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 	type LoginFormData = z.infer<typeof loginSchema>;
+	const submitButtonRef = useRef<HTMLButtonElement | null>(null);
 
 	const loginSchema = z.object({
 		login: z.string().email({ message: "E-mail inválido!" }),
@@ -26,6 +29,11 @@ const Login: React.FC = () => {
 	const navigate = useNavigate();
 
 	const handleLogin = async (data: LoginFormData) => {
+		setSubmitLoading(true);
+		if (submitButtonRef.current) {
+			submitButtonRef.current.disabled = true;
+		}
+
 		const res = await fetch((process.env.REACT_APP_SERVER_URL ?? "") + "/login", {
 			method: "post",
 			headers: { "Content-Type": "application/json" },
@@ -37,6 +45,11 @@ const Login: React.FC = () => {
 			Cookies.set(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "", user[0].token ?? "");
 			navigate("/", { replace: true });
 		} else {
+			setSubmitLoading(false);
+			if (submitButtonRef.current) {
+				submitButtonRef.current.disabled = false;
+			}
+
 			toast.error("Usuário não encontrado!", {
 				position: "top-center",
 				autoClose: 3000,
@@ -54,7 +67,7 @@ const Login: React.FC = () => {
 		const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
 		if (token) navigate("/", { replace: true });
 		setLoading(false);
-	}, []);
+	}, [navigate]);
 
 	if (loading) return <Loading />;
 
@@ -82,7 +95,7 @@ const Login: React.FC = () => {
 						<input type="password" {...register("password", { required: true })} placeholder="Sua senha" className="h-12 rounded-md bg-zinc-900 border-solid border border-zinc-700 p-4 text-md"></input>
 						{errors.password && <span className='text-sm text-red-400'>{errors.password.message}</span>}
 					</div>
-					<button type="submit" className="text-lg font-semibold bg-green-600 text-black h-12 w-64 rounded-3xl hover:bg-green-500 mt-2">Entrar</button>
+					<Button text="Entrar" loading={submitLoading} ref={submitButtonRef} />
 				</section>
 				<section className="h-full w-2/5 rounded-md bg-zinc-800 lg:flex hidden flex-col items-center p-8 relative">
 					<img alt="banner1" src={require('../assets/banner.png')} className="rounded-lg h-fit" />
