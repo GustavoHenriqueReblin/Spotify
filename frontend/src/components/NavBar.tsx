@@ -9,7 +9,7 @@ import { User, Playlist } from "../types";
 import SkeletonLoad from "./SkeletonLoad";
 
 interface MenuItems {
-    to: string;
+    to: string | undefined;
     title: string;
     iconWhenActive: ReactElement;
     iconWhenInactive?: ReactElement;
@@ -46,7 +46,7 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
         },
         // Apenas para adicionar um espaço
         {
-            to: "",
+            to: undefined,
             title: "",
             iconWhenActive: <></>,
             iconWhenInactive: <></>,

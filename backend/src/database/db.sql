@@ -176,7 +176,7 @@ CREATE TABLE IF NOT EXISTS `playlist` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `idUser` int unsigned DEFAULT NULL,
   `name` varchar(50) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
-  `picture` varchar(50) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
+  `picture` varchar(500) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
   `type` tinyint DEFAULT NULL COMMENT '0 - private, 1 - public',
   PRIMARY KEY (`id`),
   KEY `fk_playlist_user` (`idUser`),

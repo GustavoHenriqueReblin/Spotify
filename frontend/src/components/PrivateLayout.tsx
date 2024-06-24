@@ -21,7 +21,7 @@ const PrivateLayout: React.FC<PrivateLayoutProps> = ({ children }) => {
                 <NavBar user={user} userLoading={loading} />
                 { children }
             </main>
-            <Footer user={user} />
+            { user.idLastMusic && <Footer /> } 
         </Fragment>
     );
 }

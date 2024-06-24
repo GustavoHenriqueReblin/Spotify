@@ -8,19 +8,14 @@ import { TbArrowsRandom } from "react-icons/tb";
 import { IoRepeat } from "react-icons/io5";
 import { AiOutlineFullscreen, AiOutlineFullscreenExit } from "react-icons/ai";
 import { LuVolumeX, LuVolume2, LuVolume1, LuVolume } from "react-icons/lu";
-
-import { User } from "../types";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsRunning } from "../store/musicSlice";
-
-interface FooterProps {
-    user: User;
-};
+import { formatTime } from "../utils";
 
 const audioUrl = "https://firebasestorage.googleapis.com/v0/b/spotify-2e788.appspot.com/o/Don't%20You%20Worry%20Child%20%7Bid-1%7D.mp3?alt=media&token=9d3640ef-d585-4ea8-9520-56b84dafd499";
 const audio = new Audio(audioUrl);
 
-const Footer = ({ user }: FooterProps) => {
+const Footer: React.FC = () => {
     const [time, setTime] = useState<number>(0);
     const [timeInString, setTimeInString] = useState<string>("0:00");
     const [manualChange, setManualChange] = useState<boolean>(false);
@@ -34,16 +29,6 @@ const Footer = ({ user }: FooterProps) => {
     const isRunning = useSelector((state: any) => state.global.music.isRunning);
 
     const dispatch = useDispatch();
-
-    const formatTime = (time: number): string => {
-        if (time < 60) {
-            return "0:" + (time < 10 ? "0" + time : time);
-        } else {
-            const minute = Math.floor(time / 60);
-            const restOfSeconds = time - (minute * 60);
-            return minute + ":" + (restOfSeconds < 10 ? "0" + restOfSeconds : restOfSeconds);
-        }
-    };
 
     useEffect(() => {
         if (isRunning) {

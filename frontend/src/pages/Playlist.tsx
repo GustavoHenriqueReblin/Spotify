@@ -8,7 +8,10 @@ import Header from "../components/Header";
 import { FaCirclePause, FaCirclePlay } from "react-icons/fa6";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { SlOptions } from "react-icons/sl";
+import { LuClock } from "react-icons/lu";
+import { FaPlay } from "react-icons/fa";
 import { setIsRunning } from "../store/musicSlice";
+import { formatDate, formatTime } from "../utils";
 
 const Playlist: React.FC = () => {
     const [playlist, setPlaylist] = useState<PlaylistType | undefined>(undefined);
@@ -47,8 +50,6 @@ const Playlist: React.FC = () => {
                         });
 
                         const musicsData = await musicsRes.json();
-                        console.log(musicsData);
-                        
                         setMusics(musicsData);
                     }
                 } catch (error) {
@@ -63,7 +64,7 @@ const Playlist: React.FC = () => {
     }, [playlistId]);
 
     useEffect(() => {
-        if (!loading && !playlist)  navigate("/");
+        if (!loading && !playlist) navigate("/");
     }, [loading, playlist, navigate]);
 
     return (
@@ -71,7 +72,7 @@ const Playlist: React.FC = () => {
             <div className="h-fit w-full p-6 bg-zinc-700">
                 <Header />
                 <div className="flex gap-6 items-center mt-8">
-                    <div className="h-36 w-36 bg-zinc-800">
+                    <div className="h-36 w-36 bg-zinc-800 rounded-md">
                         <img alt="Playlist logo" src={loading || !playlist?.picture ? require('../assets/img-background.jpg') : playlist?.picture} className="h-full w-full object-cover"></img>
                     </div>
                     <div className="w-[calc(100%-11rem)]">
@@ -94,6 +95,32 @@ const Playlist: React.FC = () => {
                 </div> 
                 <IoMdAddCircleOutline className="text-3xl cursor-pointer hover:scale-105" />
                 <SlOptions className="text-2xl cursor-pointer hover:scale-105" />
+            </div>
+            <div className="w-full h-fit px-6 text-zinc-400">
+                <div className="h-fit w-full flex gap-4 px-4 mb-4">
+                    <div className="flex gap-2 w-full text-sm">
+                        <span className="w-[calc(3%)]">#</span>
+                        <span className="w-[calc(38%)]">Título</span>
+                        <span className="w-[calc(32%)]">Álbum</span>
+                        <span className="w-[calc(20%)]">Adicionada em</span>
+                        <span className="w-[calc(7%)] flex items-center"><LuClock className="text-base" /></span>
+                    </div>
+                </div>
+                { musics && musics.length > 0 ? musics.map((music: Music, i) => (
+                     <div key={i} className="h-12 w-full rounded-md px-4 hover:bg-zinc-800 flex items-center">
+                        <div className="flex gap-2 w-full text-sm">
+                            <span className="w-[calc(3%)] flex items-center">{ false ? <FaPlay className="cursor-pointer" /> : i + 1 }</span>
+                            <span className="w-[calc(38%)]">{ music.name }</span>
+                            <span className="w-[calc(32%)]">{ music.albumName }</span>
+                            <span className="w-[calc(20%)]">{ formatDate(music.addedAt.toString()) }</span>
+                            <span className="w-[calc(7%)] flex items-center">{ formatTime(music.duration) }</span>
+                        </div>
+                    </div>
+                )) : (
+                    <div className="w-full flex items-center justify-center py-6">
+                        <span className="">Nenhuma música encontrada :(</span>
+                    </div>
+                )}
             </div>
         </section>
     );
