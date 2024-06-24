@@ -8,8 +8,8 @@ const initialState: PlaylistState = {
     value: undefined,
 };
 
-const globalSlice = createSlice({
-    name: 'global',
+const playlistSlice = createSlice({
+    name: 'playlist',
     initialState,
     reducers: {
         setPlaylistId: (state, action: PayloadAction<number | undefined>) => {
@@ -18,5 +18,5 @@ const globalSlice = createSlice({
     },
 });
 
-export const { setPlaylistId } = globalSlice.actions;
-export default globalSlice.reducer;
+export const { setPlaylistId } = playlistSlice.actions;
+export default playlistSlice.reducer;

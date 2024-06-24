@@ -13,33 +13,35 @@ const Playlist: React.FC = () => {
     const playlistId = useSelector((state: any) => state.playlistId.value);
 
     useEffect(() => {
-        if (!playlistId) navigate("/");
-        
-        if (playlistId !== undefined) {
-            const getPlaylistData = async () => {
+        const getPlaylistData = async () => {
                 try {
-                    const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
-                    const res = await fetch((process.env.REACT_APP_SERVER_URL ?? "") + "/playlist/" + playlistId, {
-                        method: "GET",
-                        headers: { 
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${token}`
-                        },
-                    });
+                    if (playlistId !== undefined) {
+                        const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
+                        const res = await fetch((process.env.REACT_APP_SERVER_URL ?? "") + "/playlist/" + playlistId, {
+                            method: "GET",
+                            headers: { 
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
+                            },
+                        });
 
-                    const playlistData = await res.json();
-                    setPlaylist(playlistData[0]);
+                        const playlistData = await res.json();
+                        setPlaylist(playlistData[0]);
+                    }
                 } catch (error) {
                     console.error('Playlist find error:', error);
                     throw new Error('Playlist find failed');
                 } finally {
                     setLoading(false);
                 }
-            };
+        };
 
-            getPlaylistData();
-        }
-    }, [playlistId, loading, navigate, playlist]);
+        getPlaylistData();
+    }, [playlistId]);
+
+    useEffect(() => {
+        if (!loading && !playlist)  navigate("/");
+    }, [loading, playlist, navigate]);
 
     return (
         <section className="w-[calc(100%-20rem)] h-full overflow-y-auto">
@@ -58,15 +60,22 @@ const Playlist: React.FC = () => {
                         <div className="h-8 w-8 bg-zinc-900 rounded-full"></div>
                     </div>
                 </div>
-                <h2 className="text-sm my-1">Playlist</h2>
-                <h2 className="text-7xl font-bold my-4">{ loading ? "" : playlist?.name }</h2>
-                <div className="flex gap-3 items-center">
-                    <div className="h-8 w-8 bg-zinc-900 rounded-full"></div>
-                    <span className="hover:underline font-semibold cursor-pointer">{loading ? "---" : playlist?.userName}</span>
-                    <span className="">*</span>
-                    <span className="">2 likes</span>
-                    <span className="">*</span>
-                    <span className="">3 músicas, aproximadamente 1 hora</span>
+                <div className="flex gap-6 items-center mt-8">
+                    <div className="h-36 w-36 bg-zinc-800">
+                        <img alt="Playlist logo" src={loading || !playlist?.picture ? require('../assets/img-background.jpg') : playlist?.picture} className="h-full w-full object-cover"></img>
+                    </div>
+                    <div className="w-[calc(100%-11rem)]">
+                        <h2 className="text-sm">Playlist</h2>
+                        <h2 className="h-fit text-7xl whitespace-nowrap overflow-hidden text-ellipsis font-bold pb-4">{ loading ? "" : playlist?.name }</h2>
+                        <div className="flex gap-3 items-center">
+                            <div className="h-8 w-8 bg-zinc-900 rounded-full"></div>
+                            <span className="hover:underline font-semibold cursor-pointer">{loading ? "---" : playlist?.userName}</span>
+                            <span className="">*</span>
+                            <span className="">2 likes</span>
+                            <span className="">*</span>
+                            <span className="">3 músicas, aproximadamente 1 hora</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

@@ -13,7 +13,7 @@ export type Playlist = {
     id: number;
     idUser: number;
     name: string;
-    picture: number;
+    picture: string;
     type: string;
     userName?: string;
 };
