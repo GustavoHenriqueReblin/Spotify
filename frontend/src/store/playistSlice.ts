@@ -1,19 +1,19 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface PlaylistState {
-    value: number | undefined;
-}
+    playlistId: number | null;
+};
 
 const initialState: PlaylistState = {
-    value: undefined,
+    playlistId: null,
 };
 
 const playlistSlice = createSlice({
     name: 'playlist',
     initialState,
     reducers: {
-        setPlaylistId: (state, action: PayloadAction<number | undefined>) => {
-            state.value = action.payload;
+        setPlaylistId: (state, action: PayloadAction<number | null>) => {
+            state.playlistId = action.payload;
         },
     },
 });

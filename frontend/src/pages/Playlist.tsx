@@ -1,23 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { IoMdNotificationsOutline } from "react-icons/io";
-import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+
 import { useNavigate } from "react-router-dom";
-import { Playlist as PlaylistType } from "../types";
-import { useSelector } from "react-redux";
+import { Music, Playlist as PlaylistType } from "../types";
+import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
+import Header from "../components/Header";
+import { FaCirclePause, FaCirclePlay } from "react-icons/fa6";
+import { IoMdAddCircleOutline } from "react-icons/io";
+import { SlOptions } from "react-icons/sl";
+import { setIsRunning } from "../store/musicSlice";
 
 const Playlist: React.FC = () => {
     const [playlist, setPlaylist] = useState<PlaylistType | undefined>(undefined);
+    const [musics, setMusics] = useState<Music[] | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(true);
+    const { isRunning  } = useSelector((state: any) => state.global.music);
+    const { playlistId  } = useSelector((state: any) => state.global.playlist);
+
     const navigate = useNavigate();
-    const playlistId = useSelector((state: any) => state.playlistId.value);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const getPlaylistData = async () => {
                 try {
                     if (playlistId !== undefined) {
+                        const baseURL = process.env.REACT_APP_SERVER_URL ?? "";
                         const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
-                        const res = await fetch((process.env.REACT_APP_SERVER_URL ?? "") + "/playlist/" + playlistId, {
+
+                        const playlistRes = await fetch(`${baseURL}/playlist/${playlistId}`, {
                             method: "GET",
                             headers: { 
                                 "Content-Type": "application/json",
@@ -25,8 +35,21 @@ const Playlist: React.FC = () => {
                             },
                         });
 
-                        const playlistData = await res.json();
+                        const playlistData = await playlistRes.json();
                         setPlaylist(playlistData[0]);
+
+                        const musicsRes = await fetch(`${baseURL}/playlist/${playlistId}/musics`, {
+                            method: "GET",
+                            headers: { 
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`
+                            },
+                        });
+
+                        const musicsData = await musicsRes.json();
+                        console.log(musicsData);
+                        
+                        setMusics(musicsData);
                     }
                 } catch (error) {
                     console.error('Playlist find error:', error);
@@ -46,20 +69,7 @@ const Playlist: React.FC = () => {
     return (
         <section className="w-[calc(100%-20rem)] h-full overflow-y-auto">
             <div className="h-fit w-full p-6 bg-zinc-700">
-                <div className="h-12 w-full flex items-center gap-2">
-                    <div className="flex-grow flex items-center gap-2">
-                        <IoChevronBack className="text-2xl cursor-pointer hover:scale-105" />
-                        <IoChevronForward className="text-2xl cursor-pointer hover:scale-105" />
-                    </div>
-                    <div className="bg-white rounded-full font-bold text-zinc-950 text-sm px-4 py-2 cursor-pointer hover:scale-105">Explorar o premium</div>
-                    <div className="bg-zinc-950 rounded-full font-bold text-white text-sm px-4 py-2 cursor-pointer hover:scale-105">Instalar o app</div>
-                    <div className="rounded-full p-2 bg-zinc-800 cursor-pointer hover:scale-105">
-                        <IoMdNotificationsOutline className="text-xl" />
-                    </div>
-                    <div className="rounded-full p-1 bg-zinc-800 cursor-pointer hover:scale-105">
-                        <div className="h-8 w-8 bg-zinc-900 rounded-full"></div>
-                    </div>
-                </div>
+                <Header />
                 <div className="flex gap-6 items-center mt-8">
                     <div className="h-36 w-36 bg-zinc-800">
                         <img alt="Playlist logo" src={loading || !playlist?.picture ? require('../assets/img-background.jpg') : playlist?.picture} className="h-full w-full object-cover"></img>
@@ -77,6 +87,13 @@ const Playlist: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className="h-fit w-full flex gap-4 p-6 items-center text-zinc-300">
+                <div title={`${isRunning ? "Pausar" : "Tocar"}`} id="play-pause-button" className="w-fit mr-2 cursor-pointer hover:scale-105 text-green-600" onClick={() => dispatch(setIsRunning(!isRunning))}>
+                    { isRunning ? <FaCirclePause className="text-5xl" /> : <FaCirclePlay className="text-5xl" /> }
+                </div> 
+                <IoMdAddCircleOutline className="text-3xl cursor-pointer hover:scale-105" />
+                <SlOptions className="text-2xl cursor-pointer hover:scale-105" />
             </div>
         </section>
     );

@@ -10,6 +10,8 @@ import { AiOutlineFullscreen, AiOutlineFullscreenExit } from "react-icons/ai";
 import { LuVolumeX, LuVolume2, LuVolume1, LuVolume } from "react-icons/lu";
 
 import { User } from "../types";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsRunning } from "../store/musicSlice";
 
 interface FooterProps {
     user: User;
@@ -21,16 +23,17 @@ const audio = new Audio(audioUrl);
 const Footer = ({ user }: FooterProps) => {
     const [time, setTime] = useState<number>(0);
     const [timeInString, setTimeInString] = useState<string>("0:00");
-    const [isRunning, setIsRunning] = useState<boolean>(false);
     const [manualChange, setManualChange] = useState<boolean>(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const [repeat, setRepeat] = useState<boolean>(false);
     const [like, setLike] = useState<boolean>(false);
     const timeMax = 212; // Depois pegar o tempo da música na base - esse tempo agora é da const audioUrl
-
     const [volume, setVolume] = useState<number>(0.2);
     const [muted, setMuted] = useState<boolean>(false);
     const [fullScreen, setFullScreen] = useState<boolean>(false);
+    const isRunning = useSelector((state: any) => state.global.music.isRunning);
+
+    const dispatch = useDispatch();
 
     const formatTime = (time: number): string => {
         if (time < 60) {
@@ -44,25 +47,26 @@ const Footer = ({ user }: FooterProps) => {
 
     useEffect(() => {
         if (isRunning) {
+            audio.play();
             intervalRef.current = setInterval(() => {
                 setTime(prevTime => {
                     if (prevTime + 1 > timeMax) {
                         clearInterval(intervalRef.current!);
                         intervalRef.current = null;
-                        setIsRunning(false);
+                        dispatch(setIsRunning(false));
 
                         if (repeat) {
                             setTime(0);
                             setTimeout(() => {
-                                setIsRunning(true);
-                                audio.play();
-                            }, 250);
+                                dispatch(setIsRunning(true));
+                            }, 420);
                         }
                     }
                     return prevTime + 1;
                 });
             }, 1000);
         } else if (!isRunning && intervalRef.current) {
+            audio.pause();
             clearInterval(intervalRef.current);
             intervalRef.current = null;
         }
@@ -86,11 +90,6 @@ const Footer = ({ user }: FooterProps) => {
         audio.volume = volume;
         setMuted(volume <= 0);
     }, [volume]);
-
-    const handlePlayPause = () => {
-        isRunning ? audio.pause() : audio.play();
-        setIsRunning(!isRunning);
-    };
 
     return (
         <footer className="w-full h-24 max-h-28 bg-zinc-900 absolute bottom-0 flex text-zinc-300">
@@ -126,7 +125,7 @@ const Footer = ({ user }: FooterProps) => {
                 <div className="w-full h-2/3 flex items-center justify-center gap-4 pb-2">
                     <TbArrowsRandom title="Ordem aleatória" className="text-2xl cursor-pointer hover:scale-105" />
                     <MdNavigateBefore title="Anterior" className="text-4xl cursor-pointer hover:scale-105" />
-                    <div title={`${isRunning ? "Pausar" : "Tocar"}`} id="play-pause-button" className="cursor-pointer hover:scale-105" onClick={handlePlayPause}>
+                    <div title={`${isRunning ? "Pausar" : "Tocar"}`} id="play-pause-button" className="cursor-pointer hover:scale-105" onClick={() => dispatch(setIsRunning(!isRunning))}>
                         { isRunning ? <FaCirclePause className="text-4xl" /> : <FaCirclePlay className="text-4xl" /> }
                     </div> 
                     <MdNavigateNext title="Próxima" className="text-4xl cursor-pointer hover:scale-105" />

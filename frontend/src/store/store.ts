@@ -1,18 +1,25 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import storage from 'redux-persist/lib/storage';    
 import { persistReducer, persistStore } from 'redux-persist';
-import playlistReducer from './slice';
+import playistReducer from './playistSlice';
+import musicReducer from './musicSlice';
 
 const persistConfig = {
-    key: 'root',
+    key: "root",
+    blacklist: ["music"],
     storage,
 };
 
-const persistedReducer = persistReducer(persistConfig, playlistReducer);
+const rootReducer = combineReducers({
+    playlist: playistReducer,
+    music: musicReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
     reducer: {
-        playlistId: persistedReducer,
+        global: persistedReducer,
     },
 });
 
