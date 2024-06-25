@@ -23,49 +23,55 @@ const Playlist: React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        const getPlaylistData = async () => {
-                try {
-                    if (playlistId !== undefined) {
-                        const baseURL = process.env.REACT_APP_SERVER_URL ?? "";
-                        const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
+    const fetchPlaylist = async () => {
+        if (!playlistId) return;
 
-                        const playlistRes = await fetch(`${baseURL}/playlist/${playlistId}`, {
-                            method: "GET",
-                            headers: { 
-                                "Content-Type": "application/json",
-                                "Authorization": `Bearer ${token}`
-                            },
-                        });
-
-                        const playlistData = await playlistRes.json();
-                        setPlaylist(playlistData[0]);
-
-                        const musicsRes = await fetch(`${baseURL}/playlist/${playlistId}/musics`, {
-                            method: "GET",
-                            headers: { 
-                                "Content-Type": "application/json",
-                                "Authorization": `Bearer ${token}`
-                            },
-                        });
-
-                        const musicsData = await musicsRes.json();
-                        setMusics(musicsData);
-                    }
-                } catch (error) {
-                    console.error('Playlist find error:', error);
-                    throw new Error('Playlist find failed');
-                } finally {
-                    setLoading(false);
-                }
+        const baseURL = process.env.REACT_APP_SERVER_URL ?? "";
+        const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
         };
 
-        getPlaylistData();
+        try {
+            const playlistRes = await fetch(`${baseURL}/playlist/${playlistId}`, {
+                method: "GET",
+                headers,
+            });
+
+            if (!playlistRes.ok) throw new Error('Failed to fetch playlist');
+
+            const playlistData = await playlistRes.json() as PlaylistType[];
+            setPlaylist(playlistData[0]);
+
+            const musicsRes = await fetch(`${baseURL}/playlist/${playlistId}/musics`, {
+                method: "GET",
+                headers,
+            });
+
+            if (!musicsRes.ok) throw new Error('Failed to fetch playlist');
+
+            const musicsData = await musicsRes.json() as Music[];
+            setMusics(musicsData);
+        } catch (error) {
+            console.error('Playlist fetch error:', error);
+            throw new Error('Playlist fetch failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const checkPlaylistData = () => {
+        if (!loading && !playlist) navigate("/");
+    };
+
+    useEffect(() => {
+        fetchPlaylist();
     }, [playlistId]);
 
     useEffect(() => {
-        if (!loading && !playlist) navigate("/");
-    }, [loading, playlist, navigate]);
+        checkPlaylistData();
+    }, [loading]);
 
     return (
         <section className="w-[calc(100%-20rem)] h-full overflow-y-auto">

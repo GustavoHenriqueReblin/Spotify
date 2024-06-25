@@ -19,19 +19,24 @@ export const AuthProvider = ({ children }: AuthContextProps) => {
     const [loading, setLoading] = useState<boolean>(true);
 
     const validateToken = async () => {
+        const baseURL = process.env.REACT_APP_SERVER_URL ?? "";
+        const headers = { "Content-Type": "application/json" };
+
         try {
             const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
             if (!token) {
                 setLoading(false);
                 return;
             }
-
-            const res = await fetch((process.env.REACT_APP_SERVER_URL ?? "") + "/userByToken/" + token, {
-                method: "get",
-                headers: { "Content-Type": "application/json" },
+            
+            const res = await fetch(`${baseURL}/userByToken/${token}`, {
+                method: "GET",
+                headers,
             });
 
-            const user = await res.json();
+            if (!res.ok) throw new Error('Failed to fetch user');
+
+            const user = await res.json() as User[];
             if (!user[0]) Cookies.remove(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
             setUser(user[0]);
         } catch (error) {

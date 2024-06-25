@@ -70,23 +70,36 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [library, setLibrary] = useState<Playlist[] | undefined>(undefined);
 
-    useEffect(() => {
-        const getPlaylists = async () => {
-            const res = await fetch((process.env.REACT_APP_SERVER_URL ?? "") + "/library/" + user.id, {
-                method: "get",
-                headers: { 
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${user.token}`
-                },
-            });            
-    
-            const library = await res.json();
-            setLibrary(library);
-            setLoading(false);
+    const fetchLibrary = async () => {
+        if (!user || userLoading) return;
+
+        const baseURL = process.env.REACT_APP_SERVER_URL ?? "";
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${user.token}`
         };
-        
-        !userLoading && user && loading && getPlaylists();
-    }, [userLoading, user, loading]);
+
+        try {
+            const res = await fetch(`${baseURL}/library/${user.id}`, {
+                method: "GET",
+                headers,
+            });
+
+            if (!res.ok) throw new Error('Failed to fetch library');
+    
+            const library = await res.json() as Playlist[];
+            setLibrary(library);
+        } catch (error) {
+            console.error('Library fetch error:', error);
+            throw new Error('Library fetch failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchLibrary();
+    }, [user, userLoading]);
 
     return (
         <aside className="w-80 h-full bg-black">

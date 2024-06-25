@@ -18,7 +18,6 @@ const audio = new Audio(audioUrl);
 const Footer: React.FC = () => {
     const [time, setTime] = useState<number>(0);
     const [timeInString, setTimeInString] = useState<string>("0:00");
-    const [manualChange, setManualChange] = useState<boolean>(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const [repeat, setRepeat] = useState<boolean>(false);
     const [like, setLike] = useState<boolean>(false);
@@ -62,19 +61,6 @@ const Footer: React.FC = () => {
             }
         };
     }, [isRunning]);
-
-    useEffect(() => {
-        setTimeInString(formatTime(time));
-        if (manualChange) {
-            audio.currentTime = time;
-            setManualChange(false);
-        }
-    }, [time]);
-
-    useEffect(() => {
-        audio.volume = volume;
-        setMuted(volume <= 0);
-    }, [volume]);
 
     return (
         <footer className="w-full h-24 max-h-28 bg-zinc-900 absolute bottom-0 flex text-zinc-300">
@@ -121,7 +107,7 @@ const Footer: React.FC = () => {
                     />
                 </div>
                 <div className="w-full h-1/3 flex gap-4 items-center">
-                    <span className="text-xs font-extralight">{ timeInString }</span>
+                    <span className="text-xs font-extralight">{ formatTime(time) }</span>
                     <input
                         className="w-full h-1 cursor-pointer rounded-lg"
                         type="range"
@@ -130,8 +116,9 @@ const Footer: React.FC = () => {
                         step={1}
                         value={time}
                         onChange={event => {
-                            setTime(event.target.valueAsNumber);
-                            setManualChange(true);
+                            const time = event.target.valueAsNumber; 
+                            setTime(time);
+                            audio.currentTime = time;
                         }}
                     />
                     <span className="text-xs font-extralight">{ formatTime(timeMax) }</span>
@@ -157,7 +144,10 @@ const Footer: React.FC = () => {
                     step={0.1}
                     value={volume}
                     onChange={event => {
-                        setVolume(event.target.valueAsNumber);
+                        const volume = event.target.valueAsNumber;
+                        setVolume(volume);
+                        audio.volume = volume;
+                        setMuted(volume <= 0);
                     }}
                 />
                 <div>

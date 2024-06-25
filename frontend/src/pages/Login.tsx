@@ -29,45 +29,57 @@ const Login: React.FC = () => {
 	const navigate = useNavigate();
 
 	const handleLogin = async (data: LoginFormData) => {
+		const baseURL = process.env.REACT_APP_SERVER_URL ?? "";
+        const headers = { "Content-Type": "application/json" };
+
 		setSubmitLoading(true);
-		if (submitButtonRef.current) {
-			submitButtonRef.current.disabled = true;
-		}
+		if (submitButtonRef.current) submitButtonRef.current.disabled = true;
 
-		const res = await fetch((process.env.REACT_APP_SERVER_URL ?? "") + "/login", {
-			method: "post",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(data)
-		});
+		try {
+            const res = await fetch(`${baseURL}/login`, {
+                method: "POST",
+                headers,
+				body: JSON.stringify(data)
+            });
 
-		const user = await res.json() as User[];
-		if (user && user.length > 0) {
-			Cookies.set(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "", user[0].token ?? "");
-			navigate("/", { replace: true });
-		} else {
-			setSubmitLoading(false);
-			if (submitButtonRef.current) {
-				submitButtonRef.current.disabled = false;
+            if (!res.ok) throw new Error('Failed to fetch user login');
+    
+            const user = await res.json() as User[];
+			if (user && user.length > 0) {
+				Cookies.set(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "", user[0].token ?? "");
+				navigate("/", { replace: true });
+			} else {
+				setSubmitLoading(false);
+				if (submitButtonRef.current) {
+					submitButtonRef.current.disabled = false;
+				}
+
+				toast.error("Usuário não encontrado!", {
+					position: "top-center",
+					autoClose: 3000,
+					hideProgressBar: true,
+					closeOnClick: true,
+					pauseOnHover: false,
+					draggable: false,
+					progress: undefined,
+					theme: "colored",
+				});
 			}
-
-			toast.error("Usuário não encontrado!", {
-				position: "top-center",
-				autoClose: 3000,
-				hideProgressBar: true,
-				closeOnClick: true,
-				pauseOnHover: false,
-				draggable: false,
-				progress: undefined,
-				theme: "colored",
-			});
-		}
+        } catch (error) {
+            console.error('User fetch error:', error);
+            throw new Error('User fetch failed');
+        }
 	};
 
-	useEffect(() => {
-		const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
-		if (token) navigate("/", { replace: true });
-		setLoading(false);
-	}, [navigate]);
+	const checkAuth = () => {
+        const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
+        if (token) navigate("/", { replace: true });
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        checkAuth();
+    }, []);
 
 	if (loading) return <Loading />;
 
