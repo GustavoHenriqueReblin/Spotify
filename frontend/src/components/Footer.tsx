@@ -9,47 +9,116 @@ import { IoRepeat } from "react-icons/io5";
 import { AiOutlineFullscreen, AiOutlineFullscreenExit } from "react-icons/ai";
 import { LuVolumeX, LuVolume2, LuVolume1, LuVolume } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
-import { setIsRunning } from "../store/musicSlice";
+import { setIsRunning as setMusicIsRunning } from "../store/musicSlice";
+import { setVolume as setMusicVolume, setSeconds as setMusicSeconds, setAudio, setRepeat as setMusicRepeat, setRandomOrder as setMusicRandomOrder } from "../store/persisted/persistedMusicSlice";
+import { setIsRunning } from "../store/playistSlice";
 import { formatTime } from "../utils";
+import { setCurrentIndex } from "../store/persisted/persistedPlayistSlice";
 
-const audioUrl = "https://firebasestorage.googleapis.com/v0/b/spotify-2e788.appspot.com/o/Don't%20You%20Worry%20Child%20%7Bid-1%7D.mp3?alt=media&token=9d3640ef-d585-4ea8-9520-56b84dafd499";
-const audio = new Audio(audioUrl);
+const audio = new Audio("");
 
 const Footer: React.FC = () => {
-    const [time, setTime] = useState<number>(0);
-    const [timeInString, setTimeInString] = useState<string>("0:00");
+    const { currentIndex, musics } = useSelector((state: any) => state.global.persistedPlaylist);
+    const { audio: musicAudio, volume: musicVolume, seconds: musicSeconds, repeat: musicRepeat, randomOrder: musicRandomOrder } = useSelector((state: any) => state.global.persistedMusic);
+    const { isRunning: musicIsRunning } = useSelector((state: any) => state.global.music);
+    const { isRunning } = useSelector((state: any) => state.global.playlist);
+
+    const [time, setTime] = useState<number>(musicSeconds == null ? 0 : musicSeconds);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
-    const [repeat, setRepeat] = useState<boolean>(false);
+    const [repeat, setRepeat] = useState<boolean>(musicRepeat !== null ? musicRepeat : false);
+    const [randomOrder, setRandomOrder] = useState<boolean>(musicRandomOrder !== null ? musicRandomOrder : false);
     const [like, setLike] = useState<boolean>(false);
-    const timeMax = 212; // Depois pegar o tempo da música na base - esse tempo agora é da const audioUrl
-    const [volume, setVolume] = useState<number>(0.2);
+    const [volume, setVolume] = useState<number>(musicVolume == null ? 0.2 : musicVolume);
     const [muted, setMuted] = useState<boolean>(false);
     const [fullScreen, setFullScreen] = useState<boolean>(false);
-    const isRunning = useSelector((state: any) => state.global.music.isRunning);
-
+    
     const dispatch = useDispatch();
 
+    const playPause = (forcedValue?: boolean) => {
+        dispatch(setIsRunning(forcedValue ?? !isRunning));
+        dispatch(setMusicIsRunning(forcedValue ?? !musicIsRunning));
+    };
+
+    const previous = () => {
+        const index = currentIndex !== null ? currentIndex - 1 : 0;
+        if (musics && index >= 0) {
+            dispatch(setCurrentIndex(index));
+            dispatch(setAudio(musics[index]));
+            playPause(true);
+        } else {
+            dispatch(setCurrentIndex(musics.length - 1));
+            dispatch(setAudio(musics[musics.length - 1]));
+        }
+
+        setTime(0);
+    };
+
+    const next = () => {
+        let index = 0;
+        if (currentIndex !== null) {
+            if (randomOrder) {
+                index = currentIndex;
+                while (index === currentIndex || index < 0) {
+                    index = Math.floor(Math.random() * musics.length)
+                }
+            } else {
+                index = currentIndex + 1
+            }
+        }
+
+        if (musics && index <= musics.length - 1) {
+            dispatch(setCurrentIndex(index));
+            dispatch(setAudio(musics[index]));
+            playPause(true);
+        } else {
+            dispatch(setCurrentIndex(0));
+            dispatch(setAudio(musics[0]));
+            playPause(false);
+        }
+
+        setTime(0);
+    };
+
     useEffect(() => {
-        if (isRunning) {
+        if (musicIsRunning) {
+            if (audio.src !== musicAudio.src) {
+                audio.src = musicAudio.src;
+                musicVolume == null && dispatch(setMusicVolume(volume))
+                audio.volume = volume;
+                musicSeconds == null && dispatch(setMusicSeconds(time))
+                audio.currentTime = time
+                audio.load();
+            }
+
             audio.play();
             intervalRef.current = setInterval(() => {
                 setTime(prevTime => {
-                    if (prevTime + 1 > timeMax) {
+                    if (prevTime >= musicAudio.duration) {
                         clearInterval(intervalRef.current!);
                         intervalRef.current = null;
-                        dispatch(setIsRunning(false));
+                        playPause(false);
 
                         if (repeat) {
                             setTime(0);
                             setTimeout(() => {
-                                dispatch(setIsRunning(true));
-                            }, 420);
+                                playPause(true);
+                            }, 400);
+                        } else {
+                            setTime(0);
+                            next();
+                            setTimeout(() => {
+                                next();
+                                setTimeout(() => {
+                                    playPause(true);
+                                }, 400);
+                            }, 100);
                         }
                     }
+                    dispatch(setMusicSeconds(prevTime))
                     return prevTime + 1;
                 });
             }, 1000);
-        } else if (!isRunning && intervalRef.current) {
+        } else if (!musicIsRunning && intervalRef.current) {
             audio.pause();
             clearInterval(intervalRef.current);
             intervalRef.current = null;
@@ -60,18 +129,18 @@ const Footer: React.FC = () => {
                 clearInterval(intervalRef.current);
             }
         };
-    }, [isRunning]);
+    }, [musicIsRunning, musicAudio]);
 
     return (
         <footer className="w-full h-24 max-h-28 bg-zinc-900 absolute bottom-0 flex text-zinc-300">
             <section className="w-[calc(30%)] flex items-center justify-start p-4">
                 <div className="w-16 h-16 bg-zinc-500">
-                    <img></img>
+                    <img src={ musicAudio.picture }></img>
                 </div>
                 <div className="mx-5 flex flex-col">
                     <h3 
                         className="w-fit max-w-42 text-sm font-semibold cursor-pointer hover:underline whitespace-nowrap overflow-hidden text-ellipsis">
-                            Nome da música
+                            { musicAudio.name }
                     </h3>
                     <span 
                         className="w-fit max-w-42 text-xs font-light cursor-pointer hover:underline whitespace-nowrap overflow-hidden text-ellipsis">
@@ -81,7 +150,7 @@ const Footer: React.FC = () => {
                 { like ? (
                     <GoHeartFill
                         title="Descurtir" 
-                        className="text-lg mx-2 cursor-pointer hover:text-white"
+                        className="text-lg mx-2 cursor-pointer text-green-600 hover:text-green-400"
                         onClick={() => setLike(!like)} 
                     />
                 ) : (
@@ -94,16 +163,33 @@ const Footer: React.FC = () => {
             </section>
             <section className="w-2/5 flex flex-col items-center justify-center p-4">
                 <div className="w-full h-2/3 flex items-center justify-center gap-4 pb-2">
-                    <TbArrowsRandom title="Ordem aleatória" className="text-2xl cursor-pointer hover:scale-105" />
-                    <MdNavigateBefore title="Anterior" className="text-4xl cursor-pointer hover:scale-105" />
-                    <div title={`${isRunning ? "Pausar" : "Tocar"}`} id="play-pause-button" className="cursor-pointer hover:scale-105" onClick={() => dispatch(setIsRunning(!isRunning))}>
-                        { isRunning ? <FaCirclePause className="text-4xl" /> : <FaCirclePlay className="text-4xl" /> }
+                    <TbArrowsRandom 
+                        title="Ordem aleatória" 
+                        className={`text-2xl cursor-pointer ${randomOrder && "text-green-600"} hover:scale-105`} 
+                        onClick={() => {
+                            dispatch(setMusicRandomOrder(!randomOrder));
+                            setRandomOrder(!randomOrder);
+                        }} />
+                    <MdNavigateBefore 
+                        title="Anterior" 
+                        className="text-4xl cursor-pointer hover:scale-105" 
+                        onClick={() => previous()} 
+                    />
+                    <div 
+                        id="play-pause-button"
+                        title={`${musicIsRunning ? "Pausar" : "Tocar"}`} 
+                        className="cursor-pointer hover:scale-105" 
+                        onClick={() => playPause()}>
+                            { musicIsRunning ? <FaCirclePause className="text-4xl" /> : <FaCirclePlay className="text-4xl" /> }
                     </div> 
-                    <MdNavigateNext title="Próxima" className="text-4xl cursor-pointer hover:scale-105" />
+                    <MdNavigateNext title="Próxima" className="text-4xl cursor-pointer hover:scale-105" onClick={() => next()} />
                     <IoRepeat 
                         title="Repetir" 
-                        className={`text-2xl cursor-pointer hover:scale-105 ${repeat && "text-green-500"}`} 
-                        onClick={() => setRepeat(!repeat)} 
+                        className={`text-2xl cursor-pointer hover:scale-105 ${repeat && "text-green-600"}`} 
+                        onClick={() => {
+                            dispatch(setMusicRepeat(!repeat));
+                            setRepeat(!repeat);
+                        }} 
                     />
                 </div>
                 <div className="w-full h-1/3 flex gap-4 items-center">
@@ -112,26 +198,29 @@ const Footer: React.FC = () => {
                         className="w-full h-1 cursor-pointer rounded-lg"
                         type="range"
                         min={0}
-                        max={timeMax}
+                        max={musicAudio.duration}
                         step={1}
                         value={time}
                         onChange={event => {
                             const time = event.target.valueAsNumber; 
                             setTime(time);
                             audio.currentTime = time;
+                            dispatch(setMusicSeconds(time))
                         }}
                     />
-                    <span className="text-xs font-extralight">{ formatTime(timeMax) }</span>
+                    <span className="text-xs font-extralight">{ formatTime(musicAudio.duration) }</span>
                 </div>
             </section>
             <section className="w-[calc(30%)] flex items-center justify-end p-4 gap-4">
                 <div onClick={() => {
-                    muted ? setVolume(0.2) : setVolume(0);
+                    const novoVolume = muted ? musicVolume : 0
+                    setVolume(novoVolume);
                     setMuted(!muted);
+                    audio.volume = novoVolume;
                 }}>
                     {   muted ? <LuVolumeX className="text-2xl cursor-pointer hover:scale-105" /> :
-                        volume < 0.3 ? <LuVolume className="text-2xl cursor-pointer hover:scale-105" /> :
-                        volume < 0.8 ? <LuVolume1 className="text-2xl cursor-pointer hover:scale-105" /> :
+                        volume < 0.2 ? <LuVolume className="text-2xl cursor-pointer hover:scale-105" /> :
+                        volume < 0.7 ? <LuVolume1 className="text-2xl cursor-pointer hover:scale-105" /> :
                         volume <= 1 ? <LuVolume2 className="text-2xl cursor-pointer hover:scale-105" /> : 
                         null
                     }
@@ -146,8 +235,9 @@ const Footer: React.FC = () => {
                     onChange={event => {
                         const volume = event.target.valueAsNumber;
                         setVolume(volume);
-                        audio.volume = volume;
                         setMuted(volume <= 0);
+                        dispatch(setMusicVolume(volume));
+                        audio.volume = volume;
                     }}
                 />
                 <div>

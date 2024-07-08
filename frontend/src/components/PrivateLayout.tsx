@@ -4,6 +4,7 @@ import Footer from "./Footer";
 import { useAuthContext } from "../contexts/AuthContext";
 import Loading from "./Loading";
 import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 interface PrivateLayoutProps {
     children?: ReactNode;
@@ -11,6 +12,8 @@ interface PrivateLayoutProps {
 
 const PrivateLayout: React.FC<PrivateLayoutProps> = ({ children }) => {
     const { user, loading } = useAuthContext();
+    const isRunning = useSelector((state: any) => state.global.music.isRunning);
+    const audio = useSelector((state: any) => state.global.persistedMusic.audio);
 
     if (loading) return <Loading />;
     if (!user) return <Navigate to={"/login"} />;
@@ -21,7 +24,7 @@ const PrivateLayout: React.FC<PrivateLayoutProps> = ({ children }) => {
                 <NavBar user={user} userLoading={loading} />
                 { children }
             </main>
-            { user.idLastMusic || true && <Footer /> } 
+            { (user.idLastMusic || isRunning || audio) && <Footer /> } 
         </Fragment>
     );
 }

@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setPlaylistId } from "../store/playistSlice";
+import { setPlaylistId } from "../store/persisted/persistedPlayistSlice";
 
 interface NavBarItemProps {
     id: number | undefined;
@@ -15,7 +15,7 @@ interface NavBarItemProps {
 const NavBarItem = ({ id, to, title, iconWhenActive, iconWhenInactive, showIcons }: NavBarItemProps) => {
     const dispatch = useDispatch();
     const location = useLocation();
-    const { playlistId  } = useSelector((state: any) => state.global.playlist);
+    const { playlistId } = useSelector((state: any) => state.global.persistedPlaylist);
 
     return (
         <NavLink

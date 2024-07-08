@@ -1,22 +1,22 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface PlaylistState {
-    playlistId: number | null;
+    isRunning: boolean;
 };
 
 const initialState: PlaylistState = {
-    playlistId: null,
+    isRunning: false,
 };
 
 const playlistSlice = createSlice({
     name: 'playlist',
     initialState,
     reducers: {
-        setPlaylistId: (state, action: PayloadAction<number | null>) => {
-            state.playlistId = action.payload;
+        setIsRunning: (state, action: PayloadAction<boolean>) => {
+            state.isRunning = action.payload;
         },
     },
 });
 
-export const { setPlaylistId } = playlistSlice.actions;
+export const { setIsRunning } = playlistSlice.actions;
 export default playlistSlice.reducer;

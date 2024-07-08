@@ -10,18 +10,28 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { SlOptions } from "react-icons/sl";
 import { LuClock } from "react-icons/lu";
 import { FaPlay } from "react-icons/fa";
-import { setIsRunning } from "../store/musicSlice";
+import { setIsRunning } from "../store/playistSlice";
+import { setIsRunning as setMusicIsRunning } from "../store/musicSlice";
 import { formatDate, formatTime } from "../utils";
+import { setCurrentIndex, setPlaylistIsRunningId, setMusics as setPlaylistMusics } from "../store/persisted/persistedPlayistSlice";
+import { setAudio } from "../store/persisted/persistedMusicSlice";
 
 const Playlist: React.FC = () => {
+    const { playlistId, currentIndex, playlistIsRunningId } = useSelector((state: any) => state.global.persistedPlaylist);
+    const { isRunning } = useSelector((state: any) => state.global.playlist);
+    const { isRunning: musicIsRunning } = useSelector((state: any) => state.global.music);
+    const { audio: musicAudio } = useSelector((state: any) => state.global.persistedMusic);
+
     const [playlist, setPlaylist] = useState<PlaylistType | undefined>(undefined);
     const [musics, setMusics] = useState<Music[] | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(true);
-    const { isRunning  } = useSelector((state: any) => state.global.music);
-    const { playlistId  } = useSelector((state: any) => state.global.playlist);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const checkPlaylistData = () => {
+        if (!loading && !playlist) navigate("/");
+    };
 
     const fetchPlaylist = async () => {
         if (!playlistId) return;
@@ -53,6 +63,7 @@ const Playlist: React.FC = () => {
 
             const musicsData = await musicsRes.json() as Music[];
             setMusics(musicsData);
+            dispatch(setPlaylistMusics(musicsData));
         } catch (error) {
             console.error('Playlist fetch error:', error);
             throw new Error('Playlist fetch failed');
@@ -61,8 +72,15 @@ const Playlist: React.FC = () => {
         }
     };
 
-    const checkPlaylistData = () => {
-        if (!loading && !playlist) navigate("/");
+    const playPausePlaylist = () => {
+        if (playlist && musics && musics.length > 0) {
+            !isRunning && dispatch(setPlaylistIsRunningId(playlist.id));
+            musicAudio == null && dispatch(setCurrentIndex(0));
+            musicAudio == null && dispatch(setAudio(musics[0]));
+        }
+
+        dispatch(setIsRunning(!isRunning));
+        dispatch(setMusicIsRunning(!musicIsRunning));
     };
 
     useEffect(() => {
@@ -96,8 +114,8 @@ const Playlist: React.FC = () => {
                 </div>
             </div>
             <div className="h-fit w-full flex gap-4 p-6 items-center text-zinc-300">
-                <div title={`${isRunning ? "Pausar" : "Tocar"}`} id="play-pause-button" className="w-fit mr-2 cursor-pointer hover:scale-105 text-green-600" onClick={() => dispatch(setIsRunning(!isRunning))}>
-                    { isRunning ? <FaCirclePause className="text-5xl" /> : <FaCirclePlay className="text-5xl" /> }
+                <div title={`${isRunning ? "Pausar" : "Tocar"}`} id="play-pause-button" className="w-fit mr-2 cursor-pointer hover:scale-105 text-green-600" onClick={() => playPausePlaylist()}>
+                    { playlistId === playlistIsRunningId ? isRunning ? <FaCirclePause className="text-5xl" /> : <FaCirclePlay className="text-5xl" /> : <FaCirclePlay className="text-5xl" /> }
                 </div> 
                 <IoMdAddCircleOutline className="text-3xl cursor-pointer hover:scale-105" />
                 <SlOptions className="text-2xl cursor-pointer hover:scale-105" />
@@ -113,7 +131,7 @@ const Playlist: React.FC = () => {
                     </div>
                 </div>
                 { musics && musics.length > 0 ? musics.map((music: Music, i) => (
-                     <div key={i} className="h-12 w-full rounded-md px-4 hover:bg-zinc-800 flex items-center">
+                     <div key={i} className={`h-12 w-full rounded-md px-4 hover:bg-zinc-800 flex items-center ${currentIndex === i && "text-green-600"}`}>
                         <div className="flex gap-2 w-full text-sm">
                             <span className="w-[calc(3%)] flex items-center">{ false ? <FaPlay className="cursor-pointer" /> : i + 1 }</span>
                             <span className="w-[calc(38%)]">{ music.name }</span>
