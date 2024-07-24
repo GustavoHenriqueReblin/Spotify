@@ -98,13 +98,13 @@ const Login: React.FC = () => {
 				<section className="h-full lg:w-1/2 w-full rounded-md bg-zinc-800 flex flex-col items-center justify-center p-8 gap-6 relative">
 					<h2 className="text-2xl font-bold">Entrar no Spotify</h2>
 					<div className="flex flex-col gap-2 lg:w-96 w-full">
-						<span className="text-md font-semibold">E-mail</span>
-						<input type="text" {...register("login", { required: true })} placeholder="Seu e-mail" className="h-12 rounded-md bg-zinc-900 border-solid border border-zinc-700 p-4 text-md"></input>
+						<span className="text-sm font-semibold">E-mail</span>
+						<input type="text" {...register("login", { required: true })} placeholder="Seu e-mail" className="h-12 rounded-md bg-zinc-900 border-solid border border-zinc-700 p-4 text-sm"></input>
 						{errors.login && <span className='text-sm text-red-400'>{errors.login.message}</span>}
 					</div>
 					<div className="flex flex-col gap-2 lg:w-96 w-full">
-						<span className="text-md font-semibold">Senha</span>
-						<input type="password" {...register("password", { required: true })} placeholder="Sua senha" className="h-12 rounded-md bg-zinc-900 border-solid border border-zinc-700 p-4 text-md"></input>
+						<span className="text-sm font-semibold">Senha</span>
+						<input type="password" {...register("password", { required: true })} placeholder="Sua senha" className="h-12 rounded-md bg-zinc-900 border-solid border border-zinc-700 p-4 text-sm"></input>
 						{errors.password && <span className='text-sm text-red-400'>{errors.password.message}</span>}
 					</div>
 					<Button text="Entrar" loading={submitLoading} ref={submitButtonRef} />

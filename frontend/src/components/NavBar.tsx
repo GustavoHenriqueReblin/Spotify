@@ -104,9 +104,9 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
     return (
         <aside className="w-80 h-full bg-black">
             <nav className="w-full h-5/6 py-6 pl-6">
-                <ul className="text-base font-semibold">
+                <ul className="text-sm font-medium">
                     { menuItems.map((item, i) => (
-                        <li key={i} className={`rounded-md ${item.active && "cursor-pointer"} text-zinc-300 hover:text-white`}>
+                        <li key={i} className={`rounded-md ${item.active && "cursor-pointer"} text-zinc-400 hover:text-white`}>
                             <NavBarItem 
                                 id={undefined}
                                 key={i} 
@@ -121,7 +121,7 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
                 </ul>
                 <div className="h-[calc(1px)] w-full bg-zinc-600 mt-4"></div>
 
-                <ul className="text-base font-normal h-[calc(100dvh-352px)] overflow-y-auto">
+                <ul className="text-sm font-medium h-[calc(100dvh-352px)] overflow-y-auto">
                     { loading ? (
                         <SkeletonLoad count={6} />
                     ) : (

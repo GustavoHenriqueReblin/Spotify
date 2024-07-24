@@ -15,7 +15,7 @@ import { setIsRunning } from "../store/playistSlice";
 import { formatTime } from "../utils";
 import { setCurrentIndex } from "../store/persisted/persistedPlayistSlice";
 
-const audio = new Audio("");
+const audio = new Audio();
 
 const Footer: React.FC = () => {
     const { currentIndex, musics } = useSelector((state: any) => state.global.persistedPlaylist);
@@ -82,11 +82,12 @@ const Footer: React.FC = () => {
     useEffect(() => {
         if (musicIsRunning) {
             if (audio.src !== musicAudio.src) {
-                audio.src = musicAudio.src;
-                musicVolume == null && dispatch(setMusicVolume(volume))
+                musicVolume == null && dispatch(setMusicVolume(volume));
                 audio.volume = volume;
-                musicSeconds == null && dispatch(setMusicSeconds(time))
-                audio.currentTime = time
+                musicSeconds == null && dispatch(setMusicSeconds(audio.src == "" ? time : 0));
+                audio.currentTime = audio.src == "" ? time : 0;
+                setTime(audio.src == "" ? time : 0);
+                audio.src = musicAudio.src;
                 audio.load();
             }
 
@@ -193,7 +194,7 @@ const Footer: React.FC = () => {
                     />
                 </div>
                 <div className="w-full h-1/3 flex gap-4 items-center">
-                    <span className="text-xs font-extralight">{ formatTime(time) }</span>
+                    <span className="text-xs font-extralight w-[calc(5%)]">{ formatTime(time) }</span>
                     <input
                         className="w-full h-1 cursor-pointer rounded-lg"
                         type="range"
@@ -208,7 +209,7 @@ const Footer: React.FC = () => {
                             dispatch(setMusicSeconds(time))
                         }}
                     />
-                    <span className="text-xs font-extralight">{ formatTime(musicAudio.duration) }</span>
+                    <span className="text-xs font-extralight w-[calc(5%)]">{ formatTime(musicAudio.duration) }</span>
                 </div>
             </section>
             <section className="w-[calc(30%)] flex items-center justify-end p-4 gap-4">
