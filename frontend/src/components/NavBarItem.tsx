@@ -19,7 +19,7 @@ const NavBarItem = ({ id, to, title, iconWhenActive, iconWhenInactive, showIcons
 
     return (
         <NavLink
-            className={`flex items-center gap-4 py-2 rounded-lg ${id === playlistId && "text-zinc-500 hover:text-zinc-200"}`}
+            className={`flex items-center gap-4 py-2 rounded-lg ${id === playlistId && "text-zinc-200 hover:text-white"}`}
             to={to ?? location.pathname}
             end
             onClick={() => dispatch(setPlaylistId(id ?? null))}

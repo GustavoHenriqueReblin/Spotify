@@ -96,18 +96,17 @@ const Playlist: React.FC = () => {
     }, [loading]);
 
     return (
-        <section className="w-[calc(100%-20rem)] h-full overflow-y-auto">
-            <div className="h-fit w-full p-6 bg-zinc-700">
-                <Header />
-                <div className="flex gap-6 items-center mt-8">
-                    <div className="h-36 w-36 bg-zinc-800 rounded-md">
+        <>
+            <div className="h-fit w-full p-6 py-2">
+                <div className="flex gap-6 items-center">
+                    <div className="h-36 w-36 bg-zinc-200 rounded-md">
                         <img alt="Playlist logo" src={loading || !playlist?.picture ? require('../assets/img-background.jpg') : playlist?.picture} className="h-full w-full object-cover"></img>
                     </div>
-                    <div className="w-[calc(100%-11rem)] text-sm">
+                    <div className="w-auto max-w-[calc(100%-12rem)] text-sm">
                         <h2>Playlist</h2>
                         <h2 className="h-fit text-7xl whitespace-nowrap overflow-hidden text-ellipsis font-bold pb-4">{ loading ? "" : playlist?.name }</h2>
                         <div className="flex gap-3 items-center">
-                            <div className="h-8 w-8 bg-zinc-900 rounded-full"></div>
+                            <div className="h-8 w-8 bg-zinc-200 rounded-full"></div>
                             <span className="hover:underline font-semibold cursor-pointer">{loading ? "---" : playlist?.userName}</span>
                             <span className="">*</span>
                             <span className="">2 likes</span>
@@ -117,7 +116,7 @@ const Playlist: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <div className="h-fit w-full flex gap-4 p-6 items-center text-zinc-300">
+            <div className="h-fit w-full flex gap-4 p-6 items-center text-zinc-200">
                 <div title={`${isRunning ? "Pausar" : "Tocar"}`} id="play-pause-button" className="w-fit mr-2 cursor-pointer hover:scale-105 text-green-600" onClick={() => playPausePlaylist()}>
                     { playlistId === playlistIsRunningId ? isRunning ? <FaCirclePause className="text-5xl" /> : <FaCirclePlay className="text-5xl" /> : <FaCirclePlay className="text-5xl" /> }
                 </div> 
@@ -135,7 +134,7 @@ const Playlist: React.FC = () => {
                     </div>
                 </div>
                 { musics && musics.length > 0 ? musics.map((music: Music, i) => (
-                     <div key={i} className={`h-12 w-full rounded-md px-4 hover:bg-zinc-800 flex items-center ${currentIndex === i && playlistId === playlistIsRunningId && "text-green-600"}`}>
+                     <div key={i} className={`h-12 w-full rounded-md px-4 hover:bg-zinc-900 flex items-center ${currentIndex === i && playlistId === playlistIsRunningId && "text-green-600"}`}>
                         <div className="flex gap-2 w-full">
                             <span className="w-[calc(3%)] flex items-center">{ false ? <FaPlay className="cursor-pointer" /> : i + 1 }</span>
                             <span className="w-[calc(38%)]">{ music.name }</span>
@@ -150,7 +149,7 @@ const Playlist: React.FC = () => {
                     </div>
                 )}
             </div>
-        </section>
+        </>
     );
 }
 

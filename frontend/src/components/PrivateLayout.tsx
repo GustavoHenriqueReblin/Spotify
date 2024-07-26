@@ -1,8 +1,9 @@
 import React, { Fragment, ReactNode } from "react";
 import NavBar from "./NavBar";
 import Footer from "./Footer";
-import { useAuthContext } from "../contexts/AuthContext";
 import Loading from "./Loading";
+import Header from "./Header";
+import { useAuthContext } from "../contexts/AuthContext";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -22,7 +23,12 @@ const PrivateLayout: React.FC<PrivateLayoutProps> = ({ children }) => {
         <Fragment>
             <main className="w-full h-screen flex">
                 <NavBar user={user} userLoading={loading} />
-                { children }
+                { 
+                    <section className="w-[calc(100%-18rem)] flex flex-col bg-gradient-to-b bg-zinc-950">
+                        <Header />
+                        { children }
+                    </section> 
+                }
             </main>
             { (user.idLastMusic || isRunning || audio) && <Footer /> } 
         </Fragment>

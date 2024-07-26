@@ -102,11 +102,11 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
     }, [user, userLoading]);
 
     return (
-        <aside className="w-80 h-full bg-black">
+        <aside className="w-72 h-full bg-black">
             <nav className="w-full h-5/6 py-6 pl-6">
                 <ul className="text-sm font-medium">
                     { menuItems.map((item, i) => (
-                        <li key={i} className={`rounded-md ${item.active && "cursor-pointer"} text-zinc-400 hover:text-white`}>
+                        <li key={i} className={`rounded-md ${item.active && "cursor-pointer"} text-zinc-200 hover:text-white`}>
                             <NavBarItem 
                                 id={undefined}
                                 key={i} 
@@ -128,7 +128,7 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
                         <>
                             { library ? 
                                 library.map((playlist, i) => (
-                                    <li key={i} className={`rounded-md cursor-pointer text-zinc-300 hover:text-white`}>
+                                    <li key={i} className={`rounded-md cursor-pointer text-zinc-500 hover:text-zinc-200`}>
                                         <NavBarItem 
                                             id={playlist.id}
                                             key={i} 
