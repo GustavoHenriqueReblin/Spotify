@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+	--text-color: #e4e4e7;
+	--text-error: #f87171;
+	--main-green: #16a34a;
+}
+
 body {
 	margin: 0;
 	font-family: "Montserrat", sans-serif;
@@ -9,13 +15,24 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	background-color: #101010;
-	color: #fff;
 	user-select: none;
+	color: var(--text-color);
 }
 
-code {
-	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-		monospace;
+.text-color {
+	color: var(--text-color);
+}
+
+.text-error {
+	color: var(--text-error);
+}
+
+.text-main-green {
+	color: var(--main-green);
+}
+
+.bg-main-green {
+	background-color: var(--main-green);
 }
 
 ::-webkit-scrollbar {

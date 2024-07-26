@@ -3,10 +3,9 @@ import { IoHome, IoHomeOutline  } from "react-icons/io5";
 import { BiMenu, BiMenuAltLeft, BiSearch, BiSearchAlt  } from "react-icons/bi";
 import { MdAddToPhotos } from "react-icons/md";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
-
-import NavBarItem from "./NavBarItem";
 import { User, Playlist } from "../types";
 import SkeletonLoad from "./SkeletonLoad";
+import NavBarItem from "./NavBarItem";
 
 interface MenuItems {
     to: string | undefined;
@@ -106,7 +105,7 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
             <nav className="w-full h-5/6 py-6 pl-6">
                 <ul className="text-sm font-medium">
                     { menuItems.map((item, i) => (
-                        <li key={i} className={`rounded-md ${item.active && "cursor-pointer"} text-zinc-200 hover:text-white`}>
+                        <li key={i} className={`rounded-md ${item.active && "cursor-pointer"} hover:text-white`}>
                             <NavBarItem 
                                 id={undefined}
                                 key={i} 
@@ -128,7 +127,7 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
                         <>
                             { library ? 
                                 library.map((playlist, i) => (
-                                    <li key={i} className={`rounded-md cursor-pointer text-zinc-500 hover:text-zinc-200`}>
+                                    <li key={i} className={`rounded-md cursor-pointer text-zinc-500 hover:text-white`}>
                                         <NavBarItem 
                                             id={playlist.id}
                                             key={i} 

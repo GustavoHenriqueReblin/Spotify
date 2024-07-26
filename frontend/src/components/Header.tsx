@@ -41,7 +41,7 @@ const Header: React.FC = () => {
                 children={
                     <span>Instalar o app</span>
                 } 
-                className="bg-zinc-950 rounded-full font-bold text-zinc-200 text-sm px-4 py-2 cursor-pointer hover:scale-105" 
+                className="bg-zinc-950 rounded-full font-bold text-sm px-4 py-2 cursor-pointer hover:scale-105" 
                 title="Instalar o app" 
                 type="button"
             />

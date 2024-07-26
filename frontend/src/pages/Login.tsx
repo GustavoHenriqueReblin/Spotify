@@ -100,19 +100,19 @@ const Login: React.FC = () => {
 					<div className="flex flex-col gap-2 lg:w-96 w-full">
 						<span className="text-sm font-semibold">E-mail</span>
 						<input type="text" {...register("login", { required: true })} placeholder="Seu e-mail" className="h-12 rounded-md bg-zinc-950 border-solid border border-zinc-700 p-4 text-sm"></input>
-						{errors.login && <span className='text-sm text-red-400'>{errors.login.message}</span>}
+						{errors.login && <span className='text-sm text-error'>{errors.login.message}</span>}
 					</div>
 					<div className="flex flex-col gap-2 lg:w-96 w-full">
 						<span className="text-sm font-semibold">Senha</span>
 						<input type="password" {...register("password", { required: true })} placeholder="Sua senha" className="h-12 rounded-md bg-zinc-950 border-solid border border-zinc-700 p-4 text-sm"></input>
-						{errors.password && <span className='text-sm text-red-400'>{errors.password.message}</span>}
+						{errors.password && <span className='text-sm text-error'>{errors.password.message}</span>}
 					</div>
 					<Button
 						id={"login-button"}
 						children={
 							<span>Entrar</span>
 						}
-						className="text-md font-semibold bg-green-600 text-black h-12 w-64 rounded-3xl hover:bg-green-600 mt-2 flex items-center justify-center hover:scale-105"
+						className="text-md font-semibold bg-main-green text-black h-12 w-64 rounded-3xl mt-2 flex items-center justify-center hover:scale-105"
 						loading={submitLoading} 
 						title={"Login"}
 						type={"submit"}

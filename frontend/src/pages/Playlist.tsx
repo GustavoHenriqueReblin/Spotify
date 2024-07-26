@@ -100,7 +100,7 @@ const Playlist: React.FC = () => {
         <>
             <div className="h-fit w-full p-6 py-2">
                 <div className="flex gap-6 items-center">
-                    <div className="h-36 w-36 bg-zinc-200 rounded-md">
+                    <div className="h-36 w-36 text-color rounded-md">
                         <img alt="Playlist logo" src={loading || !playlist?.picture ? require('../assets/img-background.jpg') : playlist?.picture} className="h-full w-full object-cover"></img>
                     </div>
                     <div className="w-auto max-w-[calc(100%-12rem)] text-sm">
@@ -117,14 +117,14 @@ const Playlist: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <div className="h-fit w-full flex gap-4 p-6 items-center text-zinc-200">
+            <div className="h-fit w-full flex gap-4 p-6 items-center">
                 <Button
                     id={"play-pause-playlist-button"}
                     children={
                         playlistId === playlistIsRunningId ? isRunning ? <FaCirclePause className="text-5xl" /> : <FaCirclePlay className="text-5xl" /> : <FaCirclePlay className="text-5xl" />
                     }
                     onClick={() => playPausePlaylist()}
-                    className="w-fit mr-2 cursor-pointer hover:scale-105 text-green-600"
+                    className="w-fit mr-2 cursor-pointer hover:scale-105 text-main-green"
                     title={`${isRunning ? "Pausar" : "Tocar"}`}
                     type={"button"}
                 />
@@ -154,7 +154,7 @@ const Playlist: React.FC = () => {
                     </div>
                 </div>
                 { musics && musics.length > 0 ? musics.map((music: Music, i) => (
-                     <div key={i} className={`h-12 w-full rounded-md px-4 hover:bg-zinc-900 flex items-center ${currentIndex === i && playlistId === playlistIsRunningId && "text-green-600"}`}>
+                     <div key={i} className={`h-12 w-full rounded-md px-4 hover:bg-zinc-900 flex items-center ${currentIndex === i && playlistId === playlistIsRunningId && "text-main-green"}`}>
                         <div className="flex gap-2 w-full">
                             <span className="w-[calc(3%)] flex items-center">{ false ? <FaPlay className="cursor-pointer" /> : i + 1 }</span>
                             <span className="w-[calc(38%)]">{ music.name }</span>

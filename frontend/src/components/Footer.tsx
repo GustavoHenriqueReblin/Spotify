@@ -134,9 +134,9 @@ const Footer: React.FC = () => {
     }, [musicIsRunning, musicAudio]);
 
     return (
-        <footer className="w-full h-24 max-h-28 bg-black absolute bottom-0 flex text-zinc-200">
+        <footer className="w-full h-24 max-h-28 bg-black absolute bottom-0 flex">
             <section className="w-[calc(30%)] flex items-center justify-start p-4">
-                <div className="w-16 h-16 bg-zinc-200">
+                <div className="w-16 h-16">
                     <img src={ musicAudio.picture }></img>
                 </div>
                 <div className="mx-5 flex flex-col">
@@ -155,7 +155,7 @@ const Footer: React.FC = () => {
                         like ? (
                             <GoHeartFill
                                 title="Descurtir" 
-                                className="text-lg mx-2 cursor-pointer text-green-600 hover:text-green-400"
+                                className="text-lg mx-2 cursor-pointer text-main-green"
                                 onClick={() => setLike(!like)} 
                             />
                         ) : (
@@ -175,7 +175,7 @@ const Footer: React.FC = () => {
                     <Button 
                         id="random-order-button" 
                         children={ <TbArrowsRandom  /> }
-                        className={`text-2xl cursor-pointer ${randomOrder && "text-green-600"} hover:scale-105`}
+                        className={`text-2xl cursor-pointer ${randomOrder && "text-main-green"} hover:scale-105`}
                         onClick={() => {
                             dispatch(setMusicRandomOrder(!randomOrder));
                             setRandomOrder(!randomOrder);
@@ -212,7 +212,7 @@ const Footer: React.FC = () => {
                     <Button 
                         id="repeat-music-button" 
                         children={ <IoRepeat /> } 
-                        className={`text-2xl cursor-pointer hover:scale-105 ${repeat && "text-green-600"}`} 
+                        className={`text-2xl cursor-pointer hover:scale-105 ${repeat && "text-main-green"}`} 
                         onClick={() => {
                             dispatch(setMusicRepeat(!repeat));
                             setRepeat(!repeat);

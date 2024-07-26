@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import { ReactElement } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setPlaylistId } from "../store/persisted/persistedPlayistSlice";
@@ -19,7 +19,7 @@ const NavBarItem = ({ id, to, title, iconWhenActive, iconWhenInactive, showIcons
 
     return (
         <NavLink
-            className={`flex items-center gap-4 py-2 rounded-lg ${id === playlistId && "text-zinc-200 hover:text-white"}`}
+            className={`flex items-center gap-4 py-2 rounded-lg ${id === playlistId && "text-color hover:text-white"}`}
             to={to ?? location.pathname}
             end
             onClick={() => dispatch(setPlaylistId(id ?? null))}
