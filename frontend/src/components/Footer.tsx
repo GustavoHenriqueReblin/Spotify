@@ -14,6 +14,7 @@ import { setVolume as setMusicVolume, setSeconds as setMusicSeconds, setAudio, s
 import { setIsRunning } from "../store/playistSlice";
 import { formatTime } from "../utils";
 import { setCurrentIndex } from "../store/persisted/persistedPlayistSlice";
+import Button from "./Button";
 
 const audio = new Audio();
 
@@ -148,49 +149,76 @@ const Footer: React.FC = () => {
                             Artistas
                     </span>
                 </div>
-                { like ? (
-                    <GoHeartFill
-                        title="Descurtir" 
-                        className="text-lg mx-2 cursor-pointer text-green-600 hover:text-green-400"
-                        onClick={() => setLike(!like)} 
-                    />
-                ) : (
-                    <GoHeart 
-                        title="Curtir" 
-                        className="text-lg mx-2 cursor-pointer hover:text-white"
-                        onClick={() => setLike(!like)} 
-                    />
-                )}
+                <Button 
+                    id="like-button" 
+                    children={ 
+                        like ? (
+                            <GoHeartFill
+                                title="Descurtir" 
+                                className="text-lg mx-2 cursor-pointer text-green-600 hover:text-green-400"
+                                onClick={() => setLike(!like)} 
+                            />
+                        ) : (
+                            <GoHeart 
+                                title="Curtir" 
+                                className="text-lg mx-2 cursor-pointer hover:text-white"
+                                onClick={() => setLike(!like)} 
+                            />
+                        )
+                    }
+                    title="Curtir música" 
+                    type="button"
+                />
             </section>
             <section className="w-2/5 flex flex-col items-center justify-center p-4">
                 <div className="w-full h-2/3 flex items-center justify-center gap-4 pb-2">
-                    <TbArrowsRandom 
-                        title="Ordem aleatória" 
-                        className={`text-2xl cursor-pointer ${randomOrder && "text-green-600"} hover:scale-105`} 
+                    <Button 
+                        id="random-order-button" 
+                        children={ <TbArrowsRandom  /> }
+                        className={`text-2xl cursor-pointer ${randomOrder && "text-green-600"} hover:scale-105`}
                         onClick={() => {
                             dispatch(setMusicRandomOrder(!randomOrder));
                             setRandomOrder(!randomOrder);
-                        }} />
-                    <MdNavigateBefore 
-                        title="Anterior" 
-                        className="text-4xl cursor-pointer hover:scale-105" 
-                        onClick={() => previous()} 
+                        }}
+                        title="Ordem aleatória" 
+                        type="button"
                     />
-                    <div 
+                    <Button 
+                        id="previous-music-button" 
+                        children={ <MdNavigateBefore /> } 
+                        className="text-4xl cursor-pointer hover:scale-105"
+                        onClick={() => previous()} 
+                        title="Anterior" 
+                        type="button"
+                    />
+                    <Button
                         id="play-pause-button"
-                        title={`${musicIsRunning ? "Pausar" : "Tocar"}`} 
-                        className="cursor-pointer hover:scale-105" 
-                        onClick={() => playPause()}>
-                            { musicIsRunning ? <FaCirclePause className="text-4xl" /> : <FaCirclePlay className="text-4xl" /> }
-                    </div> 
-                    <MdNavigateNext title="Próxima" className="text-4xl cursor-pointer hover:scale-105" onClick={() => next()} />
-                    <IoRepeat 
-                        title="Repetir" 
+                        children={
+                            musicIsRunning ? <FaCirclePause className="text-4xl" /> : <FaCirclePlay className="text-4xl" />
+                        }
+                        onClick={() => playPause()}
+                        className="cursor-pointer hover:scale-105"
+                        title={`${musicIsRunning ? "Pausar" : "Tocar"}`}
+                        type={"button"}
+                    />
+                    <Button 
+                        id="next-music-button" 
+                        children={ <MdNavigateNext /> } 
+                        className="text-4xl cursor-pointer hover:scale-105"
+                        onClick={() => next()}
+                        title="Próxima"
+                        type="button"
+                    />
+                    <Button 
+                        id="repeat-music-button" 
+                        children={ <IoRepeat /> } 
                         className={`text-2xl cursor-pointer hover:scale-105 ${repeat && "text-green-600"}`} 
                         onClick={() => {
                             dispatch(setMusicRepeat(!repeat));
                             setRepeat(!repeat);
                         }} 
+                        title="Repetir" 
+                        type="button"
                     />
                 </div>
                 <div className="w-full h-1/3 flex gap-4 items-center">
@@ -213,19 +241,25 @@ const Footer: React.FC = () => {
                 </div>
             </section>
             <section className="w-[calc(30%)] flex items-center justify-end p-4 gap-4">
-                <div onClick={() => {
-                    const novoVolume = muted ? musicVolume : 0
-                    setVolume(novoVolume);
-                    setMuted(!muted);
-                    audio.volume = novoVolume;
-                }}>
-                    {   muted ? <LuVolumeX className="text-2xl cursor-pointer hover:scale-105" /> :
-                        volume < 0.2 ? <LuVolume className="text-2xl cursor-pointer hover:scale-105" /> :
-                        volume < 0.7 ? <LuVolume1 className="text-2xl cursor-pointer hover:scale-105" /> :
-                        volume <= 1 ? <LuVolume2 className="text-2xl cursor-pointer hover:scale-105" /> : 
-                        null
+                <Button 
+                    id="volume-button" 
+                    children={   
+                        muted ? 
+                            <LuVolumeX className="text-2xl cursor-pointer hover:scale-105" /> :
+                            volume < 0.2 ? <LuVolume className="text-2xl cursor-pointer hover:scale-105" /> :
+                            volume < 0.7 ? <LuVolume1 className="text-2xl cursor-pointer hover:scale-105" /> :
+                            volume <= 1 ? <LuVolume2 className="text-2xl cursor-pointer hover:scale-105" /> : 
+                            <></>
                     }
-                </div>
+                    onClick={() => {
+                        const novoVolume = muted ? musicVolume : 0
+                        setVolume(novoVolume);
+                        setMuted(!muted);
+                        audio.volume = novoVolume;
+                    }}
+                    title="Volume" 
+                    type="button"
+                />
                 <input
                     className="w-32 h-1 cursor-pointer rounded-lg"
                     type="range"
@@ -241,12 +275,14 @@ const Footer: React.FC = () => {
                         audio.volume = volume;
                     }}
                 />
-                <div>
-                    { fullScreen 
-                        ? <AiOutlineFullscreenExit title="Sair Tela Cheia" className="text-2xl cursor-pointer hover:scale-105" />
-                        : <AiOutlineFullscreen title="Tela Inteira" className="text-2xl cursor-pointer hover:scale-105" /> 
-                    } 
-                </div>
+                <Button 
+                    id="fullscreen-button" 
+                    children={ fullScreen ? <AiOutlineFullscreenExit /> :  <AiOutlineFullscreen /> }
+                    className="text-2xl cursor-pointer hover:scale-105"
+                    onClick={() => setFullScreen(!fullScreen)}
+                    title={`${fullScreen ? "Sair da Tela Inteira" : "Tela Inteira"}`}
+                    type="button"
+                />
             </section>
         </footer>
     );

@@ -21,7 +21,6 @@ document.addEventListener("wheel", (e) => {
 document.addEventListener("keydown", (e: any) => {
     if (e.code === "Space") {
         const button = document.getElementById("play-pause-button") as HTMLButtonElement;
-        button.focus();
         button && button.click();
     }
 }, { passive: false });

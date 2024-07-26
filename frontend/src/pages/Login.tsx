@@ -107,7 +107,17 @@ const Login: React.FC = () => {
 						<input type="password" {...register("password", { required: true })} placeholder="Sua senha" className="h-12 rounded-md bg-zinc-950 border-solid border border-zinc-700 p-4 text-sm"></input>
 						{errors.password && <span className='text-sm text-red-400'>{errors.password.message}</span>}
 					</div>
-					<Button text="Entrar" loading={submitLoading} ref={submitButtonRef} />
+					<Button
+						id={"login-button"}
+						children={
+							<span>Entrar</span>
+						}
+						className="text-md font-semibold bg-green-600 text-black h-12 w-64 rounded-3xl hover:bg-green-600 mt-2 flex items-center justify-center hover:scale-105"
+						loading={submitLoading} 
+						title={"Login"}
+						type={"submit"}
+						ref={submitButtonRef} 
+					/>
 				</section>
 				<section className="h-full w-2/5 rounded-md bg-black lg:flex hidden flex-col items-center p-8 relative">
 					<img alt="banner1" src={require('../assets/banner.png')} className="rounded-lg h-fit" />

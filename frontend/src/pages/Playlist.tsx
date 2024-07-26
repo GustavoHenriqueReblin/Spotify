@@ -15,6 +15,7 @@ import { setIsRunning as setMusicIsRunning } from "../store/musicSlice";
 import { formatDate, formatTime } from "../utils";
 import { setCurrentIndex, setPlaylistIsRunningId, setMusics as setPlaylistMusics } from "../store/persisted/persistedPlayistSlice";
 import { setAudio, setSeconds } from "../store/persisted/persistedMusicSlice";
+import Button from "../components/Button";
 
 const Playlist: React.FC = () => {
     const { playlistId, currentIndex, playlistIsRunningId } = useSelector((state: any) => state.global.persistedPlaylist);
@@ -117,11 +118,30 @@ const Playlist: React.FC = () => {
                 </div>
             </div>
             <div className="h-fit w-full flex gap-4 p-6 items-center text-zinc-200">
-                <div title={`${isRunning ? "Pausar" : "Tocar"}`} id="play-pause-button" className="w-fit mr-2 cursor-pointer hover:scale-105 text-green-600" onClick={() => playPausePlaylist()}>
-                    { playlistId === playlistIsRunningId ? isRunning ? <FaCirclePause className="text-5xl" /> : <FaCirclePlay className="text-5xl" /> : <FaCirclePlay className="text-5xl" /> }
-                </div> 
-                <IoMdAddCircleOutline className="text-3xl cursor-pointer hover:scale-105" />
-                <SlOptions className="text-2xl cursor-pointer hover:scale-105" />
+                <Button
+                    id={"play-pause-playlist-button"}
+                    children={
+                        playlistId === playlistIsRunningId ? isRunning ? <FaCirclePause className="text-5xl" /> : <FaCirclePlay className="text-5xl" /> : <FaCirclePlay className="text-5xl" />
+                    }
+                    onClick={() => playPausePlaylist()}
+                    className="w-fit mr-2 cursor-pointer hover:scale-105 text-green-600"
+                    title={`${isRunning ? "Pausar" : "Tocar"}`}
+                    type={"button"}
+                />
+                <Button
+                    id={"save-playlist-button"}
+                    children={ <IoMdAddCircleOutline /> }
+                    className="text-3xl cursor-pointer hover:scale-105"
+                    title={"Salvar Playlist"}
+                    type={"button"}
+                />
+                <Button
+                    id={"playlist-options-button"}
+                    children={ <SlOptions /> }
+                    className="text-2xl cursor-pointer hover:scale-105"
+                    title={"Opções"}
+                    type={"button"}
+                />
             </div>
             <div className="w-full h-fit px-6 text-zinc-400 text-sm font-medium">
                 <div className="h-fit w-full flex gap-4 px-4 mb-4">
