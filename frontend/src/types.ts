@@ -11,11 +11,15 @@ export type User = {
 
 export type Playlist = {
     id: number;
-    idUser: number;
     name: string;
     picture: string;
     type: string;
-    userName?: string;
+    likes: number;
+    playlistCreator: {
+        id: number;
+        name: string;
+        picture: string;
+    };
 };
 
 export type Music = {

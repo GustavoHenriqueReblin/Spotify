@@ -136,9 +136,9 @@ const Footer: React.FC = () => {
     return (
         <footer className="w-full h-24 max-h-28 bg-black absolute bottom-0 flex">
             <section className="w-[calc(30%)] flex items-center justify-start p-4">
-                <div className="w-16 h-16">
+                {/* <div className="w-16 h-16">
                     <img src={ musicAudio.picture }></img>
-                </div>
+                </div> */}
                 <div className="mx-5 flex flex-col">
                     <h3 
                         className="w-fit max-w-42 text-sm font-semibold cursor-pointer hover:underline whitespace-nowrap overflow-hidden text-ellipsis">

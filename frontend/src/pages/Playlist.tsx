@@ -11,7 +11,7 @@ import { LuClock } from "react-icons/lu";
 import { FaPlay, FaPause } from "react-icons/fa";
 import { setIsRunning } from "../store/playistSlice";
 import { setIsRunning as setMusicIsRunning } from "../store/musicSlice";
-import { formatDate, formatTime } from "../utils";
+import { formatDate, formatTime, sumMusicsTime } from "../utils";
 import { setCurrentIndex, setPlaylistIsRunningId, setMusics as setPlaylistMusics } from "../store/persisted/persistedPlayistSlice";
 import { setAudio, setSeconds } from "../store/persisted/persistedMusicSlice";
 import Button from "../components/Button";
@@ -70,7 +70,7 @@ const Playlist: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    };  
 
     const playPausePlaylist = (musicIndex?: number | undefined) => {
         // Mudou playlist
@@ -118,12 +118,14 @@ const Playlist: React.FC = () => {
                         <h2>Playlist</h2>
                         <h2 className="h-fit text-7xl whitespace-nowrap overflow-hidden text-ellipsis font-bold pb-4">{ loading ? "" : playlist?.name }</h2>
                         <div className="flex gap-3 items-center">
-                            <div className="h-8 w-8 bg-zinc-200 rounded-full"></div>
-                            <span className="hover:underline font-semibold cursor-pointer">{loading ? "---" : playlist?.userName}</span>
-                            <span className="">*</span>
-                            <span className="">2 likes</span>
-                            <span className="">*</span>
-                            <span className="">3 músicas, aproximadamente 1 hora</span>
+                            <div className="h-8 w-8 bg-zinc-200 rounded-full">
+                                <img alt="Playlist creator image" src={loading || !playlist?.playlistCreator.picture ? require('../assets/img-background.jpg') : playlist?.playlistCreator.picture} className="h-full w-full object-cover rounded-full"></img>
+                            </div>
+                            <span className="hover:underline font-semibold cursor-pointer">{loading ? "---" : playlist?.playlistCreator.name}</span>
+                            <span className="">|</span>
+                            <span className="">{playlist?.likes} likes</span>
+                            <span className="">|</span>
+                            <span className="">{musics?.length ?? 0} músicas, aproximadamente { sumMusicsTime(musics ?? []) }</span>
                         </div>
                     </div>
                 </div>
