@@ -4,12 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { Music, Playlist as PlaylistType } from "../types";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
-import Header from "../components/Header";
 import { FaCirclePause, FaCirclePlay } from "react-icons/fa6";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { SlOptions } from "react-icons/sl";
 import { LuClock } from "react-icons/lu";
-import { FaPlay } from "react-icons/fa";
+import { FaPlay, FaPause } from "react-icons/fa";
 import { setIsRunning } from "../store/playistSlice";
 import { setIsRunning as setMusicIsRunning } from "../store/musicSlice";
 import { formatDate, formatTime } from "../utils";
@@ -21,11 +20,11 @@ const Playlist: React.FC = () => {
     const { playlistId, currentIndex, playlistIsRunningId } = useSelector((state: any) => state.global.persistedPlaylist);
     const { isRunning } = useSelector((state: any) => state.global.playlist);
     const { isRunning: musicIsRunning } = useSelector((state: any) => state.global.music);
-    const { audio: musicAudio } = useSelector((state: any) => state.global.persistedMusic);
 
     const [playlist, setPlaylist] = useState<PlaylistType | undefined>(undefined);
     const [musics, setMusics] = useState<Music[] | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(true);
+    const [hoveringIndex, setHoveringIndex] = useState<number | undefined>(undefined);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -73,12 +72,12 @@ const Playlist: React.FC = () => {
         }
     };
 
-    const playPausePlaylist = () => {
+    const playPausePlaylist = (musicIndex?: number | undefined) => {
         // Mudou playlist
         if (playlist && musics && musics.length > 0 && playlistIsRunningId != playlist.id) {
             dispatch(setPlaylistIsRunningId(playlist.id));
-            dispatch(setCurrentIndex(0));
-            dispatch(setAudio(musics[0]));
+            dispatch(setCurrentIndex(musicIndex ?? 0));
+            dispatch(setAudio(musics[musicIndex ?? 0]));
             dispatch(setSeconds(0));
             dispatch(setIsRunning(true));
             dispatch(setMusicIsRunning(true));
@@ -87,6 +86,18 @@ const Playlist: React.FC = () => {
             dispatch(setMusicIsRunning(!musicIsRunning));
         }
     };
+
+    const playMusic = (musicIndex: number) => {
+        if (playlist && musics && currentIndex !== musicIndex && playlistIsRunningId === playlist.id) {
+            dispatch(setCurrentIndex(musicIndex));
+            dispatch(setAudio(musics[musicIndex]));
+            dispatch(setSeconds(0));
+            dispatch(setIsRunning(true));
+            dispatch(setMusicIsRunning(true));
+        } else {
+            playPausePlaylist(musicIndex);
+        }
+    }
 
     useEffect(() => {
         fetchPlaylist();
@@ -154,9 +165,20 @@ const Playlist: React.FC = () => {
                     </div>
                 </div>
                 { musics && musics.length > 0 ? musics.map((music: Music, i) => (
-                     <div key={i} className={`h-12 w-full rounded-md px-4 hover:bg-zinc-900 flex items-center ${currentIndex === i && playlistId === playlistIsRunningId && "text-main-green"}`}>
+                     <div 
+                        key={i} 
+                        onMouseEnter={() => setHoveringIndex(i)} 
+                        onMouseLeave={() => setHoveringIndex(undefined)} 
+                        className={`h-12 w-full rounded-md px-4 hover:bg-zinc-900 flex items-center ${currentIndex === i && playlistId === playlistIsRunningId && "text-main-green"}`}
+                    >
                         <div className="flex gap-2 w-full">
-                            <span className="w-[calc(3%)] flex items-center">{ false ? <FaPlay className="cursor-pointer" /> : i + 1 }</span>
+                            <span className="w-[calc(3%)] flex items-center"> 
+                                { hoveringIndex === i
+                                    ? isRunning && i === currentIndex && playlistId === playlistIsRunningId
+                                        ? <FaPause className="cursor-pointer" onClick={() => playPausePlaylist()} />
+                                        : <FaPlay className="cursor-pointer" onClick={() => playMusic(i)} />
+                                : i + 1 }
+                            </span>
                             <span className="w-[calc(38%)]">{ music.name }</span>
                             <span className="w-[calc(32%)]">{ music.albumName }</span>
                             <span className="w-[calc(20%)]">{ formatDate(music.addedAt.toString()) }</span>
