@@ -2,10 +2,12 @@ import React from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../contexts/AuthContext";
 import Button from "./Button";
 
 const Header: React.FC = () => {
     const navigate = useNavigate();
+    const { user } = useAuthContext();
 
     return (
         <div className="h-20 w-full flex items-center gap-2 p-6">
@@ -57,7 +59,9 @@ const Header: React.FC = () => {
             <Button 
                 id="profile-button" 
                 children={
-                    <div className="h-8 w-8 bg-zinc-200 rounded-full"></div>
+                    <div className="h-8 w-8 bg-zinc-200 rounded-full">
+                        <img alt="Playlist creator image" src={user?.picture} className="h-full w-full object-cover rounded-full"></img>
+                    </div>
                 } 
                 className="rounded-full p-1 bg-black cursor-pointer hover:scale-105"
                 title="Meu Perfil" 
