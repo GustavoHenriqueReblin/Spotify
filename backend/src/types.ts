@@ -31,3 +31,14 @@ export type Music = {
     albumName: string;
     addedAt: Date;
 };
+
+export type Library = {
+    id: number;
+    idUser: number;
+    playlists: Playlist[];
+};
+
+export type DefaultResponse = {
+    error: boolean;
+    message: string;
+};

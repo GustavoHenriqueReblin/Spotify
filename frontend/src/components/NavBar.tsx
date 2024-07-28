@@ -6,6 +6,7 @@ import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import { User, Playlist } from "../types";
 import SkeletonLoad from "./SkeletonLoad";
 import NavBarItem from "./NavBarItem";
+import { useAuthContext } from "../contexts/AuthContext";
 
 interface MenuItems {
     to: string | undefined;
@@ -66,35 +67,7 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
         },
     ];
     
-    const [loading, setLoading] = useState<boolean>(true);
-    const [library, setLibrary] = useState<Playlist[] | undefined>(undefined);
-
-    const fetchLibrary = async () => {
-        if (!user || userLoading) return;
-
-        const baseURL = process.env.REACT_APP_SERVER_URL ?? "";
-        const headers = {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${user.token}`
-        };
-
-        try {
-            const res = await fetch(`${baseURL}/library/${user.id}`, {
-                method: "GET",
-                headers,
-            });
-
-            if (!res.ok) throw new Error('Failed to fetch library');
-    
-            const library = await res.json() as Playlist[];
-            setLibrary(library);
-        } catch (error) {
-            console.error('Library fetch error:', error);
-            throw new Error('Library fetch failed');
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { library, fetchLibrary } = useAuthContext();
 
     useEffect(() => {
         fetchLibrary();
@@ -121,12 +94,12 @@ const NavBar = ({ user, userLoading }: NavBarProps) => {
                 <div className="h-[calc(1px)] w-full bg-zinc-600 mt-4"></div>
 
                 <ul className="text-sm font-medium h-[calc(100dvh-352px)] overflow-y-auto">
-                    { loading ? (
+                    { userLoading ? (
                         <SkeletonLoad count={6} />
                     ) : (
                         <>
                             { library ? 
-                                library.map((playlist, i) => (
+                                library.playlists.map((playlist, i) => (
                                     <li key={i} className={`rounded-md cursor-pointer text-zinc-500 hover:text-white`}>
                                         <NavBarItem 
                                             id={playlist.id}

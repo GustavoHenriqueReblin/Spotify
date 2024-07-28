@@ -1,11 +1,14 @@
-import { ReactNode, createContext, useContext, useState, useEffect } from "react";
+import React, { ReactNode, createContext, useContext, useState, useEffect } from "react";
 import Cookies from "js-cookie";
 
-import { User } from "../types";
+import { Library, User } from "../types";
 
 type AuthContextType = {
     user: User | undefined;
     loading: boolean;
+    library: Library | undefined;
+    setLibrary: React.Dispatch<React.SetStateAction<Library | undefined>>;
+    fetchLibrary: () => void;
 };
 
 type AuthContextProps = {
@@ -17,6 +20,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider = ({ children }: AuthContextProps) => {
     const [user, setUser] = useState<User | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(true);
+    const [library, setLibrary] = useState<Library | undefined>(undefined);
 
     const validateToken = async () => {
         const baseURL = process.env.REACT_APP_SERVER_URL ?? "";
@@ -47,12 +51,39 @@ export const AuthProvider = ({ children }: AuthContextProps) => {
         }
     };
 
+    const fetchLibrary = async () => {
+        if (!user || loading) return;
+
+        const baseURL = process.env.REACT_APP_SERVER_URL ?? "";
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${user.token}`
+        };
+
+        try {
+            const res = await fetch(`${baseURL}/library/${user.id}`, {
+                method: "GET",
+                headers,
+            });
+
+            if (!res.ok) throw new Error('Failed to fetch library');
+    
+            const library = await res.json() as Library;
+            setLibrary(library);
+        } catch (error) {
+            console.error('Library fetch error:', error);
+            throw new Error('Library fetch failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         validateToken();
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, loading }}>
+        <AuthContext.Provider value={{ user, loading, library, setLibrary, fetchLibrary }}>
             { children }
         </AuthContext.Provider>
     );

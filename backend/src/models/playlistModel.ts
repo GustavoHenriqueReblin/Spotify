@@ -1,9 +1,10 @@
+import { OkPacket, ResultSetHeader } from 'mysql2';
 import conn from '../conn';
-import { Music, Playlist } from "../types";
+import { DefaultResponse, Music, Playlist } from "../types";
 
 const playlist = async (id: number): Promise<Playlist[] | []> => {
     const [rows] = await conn.execute(
-        "SELECT p.id, p.`name`, p.picture, p.`type`, (SELECT COUNT(*) FROM playlist_likes WHERE idPlaylist = 3) likes, " +
+        "SELECT p.id, p.`name`, p.picture, p.`type`, (SELECT COUNT(*) FROM lib_pla WHERE idPlaylist = 3) likes, " +
         "JSON_OBJECT('id', u.id, 'picture', u.picture, 'name', u.`name`) AS `playlistCreator`" +
         "FROM playlist p " +
         "INNER JOIN `user` u on u.id = p.idUser " +
@@ -31,4 +32,24 @@ const playlistMusics = async (idPlaylist: number): Promise<Music[] | []> => {
     return result;
 };
 
-export { playlist, playlistMusics };
+const savePlaylist = async (idPlaylist: number, idLibrary: number, save: boolean): Promise<DefaultResponse> => {
+    const query = save 
+        ? "INSERT INTO lib_pla (idLibrary, idPlaylist) VALUES (?, ?) ON DUPLICATE KEY UPDATE idLibrary = VALUES(idLibrary), idPlaylist = VALUES(idPlaylist)"
+        : "DELETE FROM lib_pla WHERE idLibrary = ? AND idPlaylist = ?";
+    
+    const [result] = await conn.execute<ResultSetHeader>(query, [idLibrary, idPlaylist]);
+
+    if (result.affectedRows !== undefined) {
+        return {
+            error: false, 
+            message: `Playlist ${save ? "salva" : "removida"} com sucesso`
+        };
+    }
+
+    return {
+        error: true, 
+        message: "Não foi possível salvar a playlist"
+    };
+};
+
+export { playlist, playlistMusics, savePlaylist };

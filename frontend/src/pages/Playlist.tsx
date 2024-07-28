@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
-import { Music, Playlist as PlaylistType } from "../types";
+import { DefaultResponse, Music, Playlist as PlaylistType } from "../types";
 import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { FaCirclePause, FaCirclePlay } from "react-icons/fa6";
@@ -15,6 +15,8 @@ import { formatDate, formatTime, sumMusicsTime } from "../utils";
 import { setCurrentIndex, setPlaylistIsRunningId, setMusics as setPlaylistMusics } from "../store/persisted/persistedPlayistSlice";
 import { setAudio, setSeconds } from "../store/persisted/persistedMusicSlice";
 import Button from "../components/Button";
+import { GoHeart, GoHeartFill } from "react-icons/go";
+import { useAuthContext } from "../contexts/AuthContext";
 
 const Playlist: React.FC = () => {
     const { playlistId, currentIndex, playlistIsRunningId } = useSelector((state: any) => state.global.persistedPlaylist);
@@ -28,6 +30,14 @@ const Playlist: React.FC = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { library, fetchLibrary } = useAuthContext();
+
+    const baseURL = process.env.REACT_APP_SERVER_URL ?? "";
+    const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
+    const headers = {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+    };
 
     const checkPlaylistData = () => {
         if (!loading && !playlist) navigate("/");
@@ -35,13 +45,6 @@ const Playlist: React.FC = () => {
 
     const fetchPlaylist = async () => {
         if (!playlistId) return;
-
-        const baseURL = process.env.REACT_APP_SERVER_URL ?? "";
-        const token = Cookies.get(process.env.REACT_APP_AUTH_COOKIE_NAME ?? "");
-        const headers = {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        };
 
         try {
             const playlistRes = await fetch(`${baseURL}/playlist/${playlistId}`, {
@@ -97,7 +100,34 @@ const Playlist: React.FC = () => {
         } else {
             playPausePlaylist(musicIndex);
         }
-    }
+    };
+
+    const savePlaylist = async (save: boolean) => {
+        const idLibrary = library?.id;
+        const idPlaylist = playlistId;
+
+        try {
+            const res = await fetch(`${baseURL}/savePlaylist`, {
+                method: "POST",
+                headers,
+				body: JSON.stringify({
+                    idPlaylist,
+                    idLibrary,
+                    save,
+                })
+            });
+
+            if (!res.ok) throw new Error('Failed to fetch save playlist');
+    
+            const defres = await res.json() as DefaultResponse;
+            if (defres.error) throw new Error('Failed to fetch save playlist');
+
+            fetchLibrary();
+        } catch (error) {
+            console.error('Save playlist fetch error:', error);
+            throw new Error('Save playlist fetch failed');
+        }
+    };
 
     useEffect(() => {
         fetchPlaylist();
@@ -137,9 +167,29 @@ const Playlist: React.FC = () => {
                         playlistId === playlistIsRunningId ? isRunning ? <FaCirclePause className="text-5xl" /> : <FaCirclePlay className="text-5xl" /> : <FaCirclePlay className="text-5xl" />
                     }
                     onClick={() => playPausePlaylist()}
-                    className="w-fit mr-2 cursor-pointer hover:scale-105 text-main-green"
+                    className="w-fit mr-1 cursor-pointer hover:scale-105 text-main-green"
                     title={`${isRunning ? "Pausar" : "Tocar"}`}
                     type={"button"}
+                />
+                <Button
+                    id="like-button" 
+                    children={ 
+                        library && library.playlists.some(playlist => playlist.id === playlistId) ? (
+                            <GoHeartFill
+                                title="Descurtir" 
+                                className="text-3xl mx-2 cursor-pointer text-main-green"
+                                onClick={() => savePlaylist(false)} 
+                            />
+                        ) : (
+                            <GoHeart
+                                title="Curtir" 
+                                className="text-3xl mx-2 cursor-pointer hover:text-white"
+                                onClick={() => savePlaylist(true)} 
+                            />
+                        )
+                    }
+                    title="Curtir música" 
+                    type="button"
                 />
                 <Button
                     id={"save-playlist-button"}
